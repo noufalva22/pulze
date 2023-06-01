@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="93.10052" height="93.10052" viewBox="0 0 93.10052 93.10052">
+  <defs>
+    <linearGradient id="Degradado_sin_nombre_39" data-name="Degradado sin nombre 39" x1="46.55026" y1="0.44513" x2="46.55026" y2="100.44651" gradientUnits="userSpaceOnUse">
+      <stop offset="0.00134" stop-color="#ffffb8"/>
+      <stop offset="0.99955" stop-color="#c89600"/>
+    </linearGradient>
+    <linearGradient id="Degradado_sin_nombre_66" data-name="Degradado sin nombre 66" x1="23.15872" y1="69.64367" x2="71.50176" y2="22.70595" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1c1432"/>
+      <stop offset="0.99554" stop-color="#43314f"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient" x1="23.11858" y1="47.88572" x2="69.91404" y2="47.88572" gradientUnits="userSpaceOnUse">
+      <stop offset="0.00286" stop-color="#eea300"/>
+      <stop offset="0.04591" stop-color="#efac16"/>
+      <stop offset="0.14518" stop-color="#f0bd42"/>
+      <stop offset="0.24533" stop-color="#f0cc67"/>
+      <stop offset="0.34491" stop-color="#f1d784"/>
+      <stop offset="0.44374" stop-color="#f2e099"/>
+      <stop offset="0.54152" stop-color="#f2e4a5"/>
+      <stop offset="0.63714" stop-color="#f2e6a9"/>
+      <stop offset="1" stop-color="#eea300"/>
+    </linearGradient>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="OBJECTS">
+      <g>
+        <path d="M46.55029,0A46.55026,46.55026,0,1,0,93.10052,46.55023,46.55025,46.55025,0,0,0,46.55029,0ZM46.744,84.46088A37.71689,37.71689,0,1,1,84.46088,46.744,37.71687,37.71687,0,0,1,46.744,84.46088Z" fill="url(#Degradado_sin_nombre_39)"/>
+        <g opacity="0.53">
+          <path d="M11.22632,16.25134C16.17424,20.74771,24.13092,8.12567,38.5072,5.074c12.3549-2.62262,21.981,3.95315,27.28089-.91025A46.51865,46.51865,0,0,0,11.22632,16.25134Z" fill="#fff"/>
+        </g>
+        <g opacity="0.42">
+          <path d="M4.45233,47.61924c0-9.76208,2.39673-17.6758,5.35325-17.6758s-1.41207,7.91372-1.41207,17.6758S12.76209,65.295,9.80558,65.295,4.45233,57.38131,4.45233,47.61924Z" fill="#ff9"/>
+        </g>
+        <g opacity="0.42">
+          <path d="M89.45055,47.61924c0,9.76207-2.39673,17.67579-5.35324,17.67579s1.41206-7.91372,1.41206-17.67579-4.36858-17.6758-1.41206-17.6758S89.45055,37.85716,89.45055,47.61924Z" fill="#ff9"/>
+        </g>
+        <path d="M46.744,6.61139A40.1326,40.1326,0,1,0,86.87659,46.744,40.13263,40.13263,0,0,0,46.744,6.61139Zm0,77.84949A37.71689,37.71689,0,1,1,84.46088,46.744,37.71687,37.71687,0,0,1,46.744,84.46088Z" fill="#ff9"/>
+        <circle cx="46.744" cy="46.74401" r="33.69048" fill="url(#Degradado_sin_nombre_66)"/>
+      </g>
+      <path d="M60.555,29.12185H32.47767a9.17394,9.17394,0,0,0-9.35909,9.38193V57.26765a9.1726,9.1726,0,0,0,9.35909,9.38193H60.555A9.1726,9.1726,0,0,0,69.914,57.26765V38.50378A9.17394,9.17394,0,0,0,60.555,29.12185Zm4.67954,27.59464c0,4.691-4.67954,4.691-4.67954,4.691V40.29811L46.51631,49.68005,32.47767,40.29811V61.40746s-4.67954,0-4.67954-4.691V37.95263s0-4.691,4.67954-4.691L46.51631,43.81634,60.555,33.26166c4.67954,0,4.67954,4.691,4.67954,4.691Z" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>
