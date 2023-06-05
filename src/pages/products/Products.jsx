@@ -14,55 +14,396 @@ import { Bars } from 'react-loader-spinner'
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from '../../firebase/config';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Products = () => {
 
-    const [selectedIndex, setSelectedIndex] = useState(2)
+    const [selectedIndex, setSelectedIndex] = useState(0)
     const [products, setProducts] = useState()
     const [selectedProduct, setSelectedProduct] = useState()
     const [selectedImg, setSelectedImg] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
-
+    const [title, setTitle] = useState();
+    const [progress, setProgress] = useState(0)
     const [productID, setProductID] = useState()
-    const [title, setTitle] = useState()
+    const [imageName, setImageName] = useState()
     const [description, setDescription] = useState()
     const [category, setCategory] = useState()
     const [MRP, setMRP] = useState()
     const [price, setPrice] = useState()
+    const [errorMessage, setErrorMessage] = useState("")
+    const [successMessage, setSuccessMessage] = useState("")
+
+    const [addNewProduct, setAddNewProduct] = useState(false)
+
+    const [newImages, setNewImages] = useState([]);
     var loadFlag = 0
+
+    const getProducts = async () => {
+
+        try {
+            const res = await publicRequest.get(`/products`)
+            setProducts(res.data)
+            if (res.data.length == 0) {
+                setAddNewProduct(true)
+            }
+            console.log(res.data);
+            loadFlag += 1
+
+        } catch (error) {
+
+        }
+    }
     useEffect(() => {
         if (loadFlag === 0) {
 
-            const getProducts = async () => {
 
-                try {
-                    const res = await publicRequest.get(`/products`)
-                    setProducts(res.data)
-                    console.log(res.data);
-                    loadFlag += 1
-
-                } catch (error) {
-
-                }
-            }
             getProducts()
         }
     }, [])
-    const handleUpdate = async () => {
+
+
+    const handleUpdate = async (id) => {
+
+        const newProductData = {
+            title: title,
+            desc: description,
+            category: category,
+            MRP: MRP,
+            price: price,
+
+
+        }
         try {
-            const res = await publicRequest.put(`/product/${userId}/accounts/${ACCOUNT_DATA._id}`, newLink);
+            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}`, newProductData);
+            console.log(res.data);
+            handleNotification("Success", "Updated")
+            getProducts()
            
         } catch (error) {
-                console.log(error);
+            console.log(error);
+            handleNotification("Error", error.message)
         }
     }
+    const handleNotification = async (type, message) => {
+        console.log(type,);
+        if (type == 'Success') {
+            console.log(successMessage);
+            toast.success(message, {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                icon: true,
+                theme: "colored",
+                // transition:"zoom",
+
+            })
+        }
+        if (type == 'Error') {
+
+            toast.error(message, {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                icon: true,
+                theme: "colored",
+            });
+        }
+
+    }
+    const handleNewProduct = async () => {
+
+        const productData = {
+            productID,
+            title,
+            desc: description,
+            category,
+            MRP,
+            price,
+        }
+        console.log("pro data", productData);
+        try {
+            const res = await publicRequest.post('/products/', productData)
+            console.log(res.data);
+            getProducts()
+            setSuccessMessage("Added")
+            handleNotification("Success", "Added")
+            let length = products.length;
+            console.log(length);
+            // setSelectedIndex(length)
+
+        } catch (error) {
+            console.log(error);
+            setErrorMessage(error.message)
+            handleNotification("Error", error.message)
+        }
+
+    }
+    const handleDeleteImage = async () => {
+
+        if (products && products[selectedIndex] && products[selectedIndex].image) {
+
+
+            try {
+                const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/delete-image`, {
+                    //this index is image index
+                    selectedIndex: selectedImg,
+                });
+
+                console.log(res.data)
+
+
+                const updatedImages = [...products[selectedIndex].image];
+                console.log(updatedImages);
+                updatedImages.splice(selectedImg, 1); // Remove the selected image from the array
+                const updatedProducts = [...products];
+                updatedProducts[selectedIndex] = {
+                    ...updatedProducts[selectedIndex],
+                    image: updatedImages,
+                };
+                //update the selected image.
+                if (selectedImg > 0) {
+                    setSelectedImg(prevIndex => prevIndex - 1)
+                }
+
+                setProducts(updatedProducts);
+                setSuccessMessage("Deleted")
+                handleNotification("Success", "Deleted")
+            } catch (error) {
+                console.error(error);
+                setErrorMessage(error.message)
+                handleNotification("Error", error.message)
+
+            }
+
+
+        }
+    };
+
+
+    const metadata = {
+        contentType: 'image/jpeg'
+    };
+
+
+    // const handleCompressImage = (e) => {
+
+    //     // e.preventDefault();
+    //     const options = {
+    //         maxSizeMB: 10,
+    //         // maxWidthOrHeight: 500,   
+    //         useWebWorker: true,
+    //     };
+
+    //     let output;
+    //     imageCompression(newImage, options).then((x) => {
+    //         output = x;
+    //         const downloadLink = URL.createObjectURL(output);
+    //         setCompressedImage(output);
+
+    //         console.log("completed");
+
+    //     });
+
+    // };
+
+    // var fileName 
+    const handleAddImage = (e) => {
+
+        const file = e.target.files[0];
+        const fileName = file.name;
+        setImageName(file.name)
+        // setNewImages(e.target.files[0])
+        console.log(file);
+        setNewImages([...newImages, file]);
+        // console.log(file);
+        // const newImageUrl = URL.createObjectURL(file);
+        // setNewImages([...newImages, newImageUrl]);
+        // // ... Additional logic for uploading the image to Firebase storage'
+        // console.log(newImages);
+    };
+
+    useEffect(() => {
+        console.log(products);
+        if (products !== undefined && products.length != 0) {
+            console.log("1");
+            setProductID(products[selectedIndex].productID)
+            setTitle(products[selectedIndex].title)
+            setDescription(products[selectedIndex].desc)
+            setCategory(products[selectedIndex].category)
+            setMRP(products[selectedIndex].MRP)
+            setPrice(products[selectedIndex].price)
+        }
+
+    }, [products])
+
+    useEffect(() => {
+        if (products !== undefined && products.length != 0) {
+            setProductID(products[selectedIndex].productID)
+            setTitle(products[selectedIndex].title)
+            setDescription(products[selectedIndex].desc)
+            setCategory(products[selectedIndex].category)
+            setMRP(products[selectedIndex].MRP)
+            setPrice(products[selectedIndex].price)
+        }
+
+    }, [selectedIndex])
+    useEffect(() => {
+        console.log("new image", newImages);
+    }, [newImages])
+
+    //update firebase image link in db
+
+    const updateProductImage = async (link) => {
+
+        console.log(link);
+        console.log(products[selectedIndex]._id);
+
+        try {
+            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/update-image`, {
+                link,
+            });
+
+            console.log(res.data)
+        } catch (error) {
+            console.error(error);
+
+        }
+    };
+    //Deleteimage from newImage array since it's updated
+    const handleDeleteNewImage = (index) => {
+        const updatedImages = { ...newImages }; // Create a copy of the newImages object
+        delete updatedImages[index]; // Delete the element at the specified index
+
+        setNewImages(updatedImages); // Update the state with the modified object
+    };
+
+    console.log("New Image", newImages);
+
+    const handleUploadImage = async (index) => {
+        console.log("upload Starts", newImages);
+        console.log("Image name", newImages[index].name);
+        const storageRef = ref(storage, `Product-Images/Normal/${productID}/${imageName}`);
+        const uploadTask = uploadBytesResumable(storageRef, newImages[index], metadata);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                console.log("size is", snapshot.totalBytes);
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const uploadStatus = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + uploadStatus + '% done');
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+                setProgress(uploadStatus => uploadStatus + 0);
+                setProgress(uploadStatus);
+
+
+            },
+            (error) => {
+                // A full list of error codes is available at
+
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        break;
+                    case 'storage/canceled':
+                        // User canceled the upload
+                        break;
+
+                    // ...
+
+                    case 'storage/unknown':
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                }
+            },
+            () => {
+                // Upload completed successfully, now we can get the download URL
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+
+                    console.log('File available at', downloadURL);
+
+                    updateProductImage(downloadURL).then(() => {
+                        console.log("dowld url", downloadURL);
+                        console.log(newImages)
+                        // handleDeleteNewImage(index)
+                        products[selectedIndex].image.push({ src: downloadURL });
+                        console.log("new pro", products);
+                        setNewImages([]);    
+                    })
+                    console.log("123");
+
+                });
+            }
+        );
+    }
+    const handleDeleteProduct = async () => {
+
+        try {
+            const res = await publicRequest.delete(`/products/${products[selectedIndex]._id}`)
+            console.log(res.data);
+            setSelectedIndex(prevIndex => prevIndex - 1)
+            setSuccessMessage("Deleted")
+            handleNotification("Success", "Product Deleted")
+            getProducts()
+        } catch (error) {
+            console.log(error, error.message)
+            handleNotification("Error", error.message)
+        }
+    }
+
+
+
+
     return (
-        <div className='products'>
+        <div className='productsPage'>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <Sidebar />
             <div className="singleProductContainer">
                 <Navbar />
 
                 <div className="top">
                     <div className="left">
+                        <div className="button">
+                            <button className='btn' onClick={() => {
+                                setAddNewProduct(true)
+                                setCategory('')
+                                setTitle('')
+                                setDescription('')
+                                setMRP(0)
+                                setPrice(0)
+                                setProductID('')
+                                setNewImages([]);
+
+                            }}>Add New</button>
+                        </div>
                         <div className="products">
 
                             <TableContainer component={Paper} className="table">
@@ -77,12 +418,21 @@ const Products = () => {
                                     <TableBody>
                                         {products ? products.map((product, index) => (
                                             <TableRow key={index} onClick={() => {
+                                                console.log("product is", products)
+                                                if (addNewProduct) {
+                                                    setNewImages([]);
+                                                    setAddNewProduct(false)
+
+
+                                                }
                                                 setSelectedProduct(product)
                                                 setSelectedIndex(index)
+                                                setNewImages([]);
+
                                             }} >
                                                 <TableCell className="tableCell">
                                                     <div className="cellWrapper">
-                                                        <img src={product.image ? product.image[0].src : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"} alt="" className="image" />
+                                                        <img src={product.image ? product.image[0]?.src : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"} alt="" className="image" />
                                                         {product.title}
                                                     </div>
                                                 </TableCell>
@@ -97,12 +447,20 @@ const Products = () => {
                     </div>
 
                     {products && <div className="right">
+                        <div className="deleteButton" onClick={() => {
+                            handleDeleteProduct()
+                        }}>
+                            Delete
+                        </div>
                         <div className="images">
 
                             <div className="grid">
-                                {products && products[selectedIndex].image.map((image, index) => {
+                                {products && !addNewProduct && products[selectedIndex].image.map((image, index) => {
                                     return <>
-                                        <img src={image.src} alt="productImage"
+                                        <img
+                                            src={image.src ? image.src : 'https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg'}
+
+                                            alt="productImage"
                                             className={selectedImg === index ? "selected" : ""}
                                             onClick={(e) => {
                                                 if (selectedImg !== index) {
@@ -115,7 +473,15 @@ const Products = () => {
                                         />
                                     </>
                                 })}
-
+                                {newImages && newImages.map((image, index) => (
+                                    <div className="upload-image" key={index}>
+                                        <img src={image} alt={newImages.alt} />
+                                        <div className="upload-overlay">
+                                            <CloudUploadIcon className='upload-btn' onClick={() => handleUploadImage(index)} />
+                                            {/* <button className="upload-button" onClick={() => handleImageUpload(image)}>Upload</button> */}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                             <div className="mainImage">
                                 {imageLoading &&
@@ -129,61 +495,71 @@ const Products = () => {
                                 }
                                 <img
                                     style={{ display: imageLoading ? 'none' : 'block' }}
-                                    src={products[selectedIndex].image[selectedImg].src} alt="mainImage"
-                                    onLoad={() => setImageLoading(false)} />
+                                    src={addNewProduct || !products[selectedIndex].image[selectedImg]?.src ? 'https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg' : products[selectedIndex].image[selectedImg]?.src}
+                                    alt="mainImage"
+                                    onLoad={() => setImageLoading(false)}
+                                />
                             </div>
                             <div className="action">
-                                <DriveFolderUploadIcon className='icon' />
-                                <DeleteIcon className='icon' />
+                                <label htmlFor="file" >
+                                    <DriveFolderUploadIcon className='icon' style={ newImages.length >0 ? {display: "none" }:{display: "unset"}}/>
+                                </label>
+                                <input type="file" id="file" onChange={handleAddImage} style={{ display: "none" }} />
+                                <DeleteIcon className='icon' onClick={handleDeleteImage} />
+
                             </div>
                         </div>
                         <hr />
 
 
                         <div className="details">
-                            <form>
+
+                            <div className="form">
                                 <div className="formInput">
 
                                     <label>Product ID</label>
-                                    <input type="text" value={products[selectedIndex]._id}
+                                    <input type="text" value={productID} disabled={!addNewProduct}
                                         onChange={(e) => setProductID(e.target.value)} />
                                 </div>
                                 <div className="formInput">
 
                                     <label>Title</label>
-                                    <input type="text" value={products[selectedIndex].title}
-                                        onChange={(e) => setProductID(e.target.value)} />
+                                    <input type="text" value={title}
+                                        onChange={(e) => setTitle(e.target.value)} />
                                 </div>
                                 <div className="formInput">
 
                                     <label>Description</label>
                                     <textarea
-                                        value={products[selectedIndex].desc}
-                                        onChange={(e) => setProductID(e.target.value)}
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
                                     />
                                 </div>
                                 <div className="formInput">
 
                                     <label>Category</label>
-                                    <input type="text" value={products[selectedIndex].category}
-                                        onChange={(e) => setProductID(e.target.value)} />
+                                    <input type="text" value={category}
+                                        onChange={(e) => setCategory(e.target.value)} />
                                 </div>
                                 <div className="formInput">
 
                                     <label>MRP</label>
-                                    <input type="text" value={products[selectedIndex].MRP}
-                                        onChange={(e) => setProductID(e.target.value)} />
+                                    <input type="text" value={MRP}
+                                        onChange={(e) => setMRP(e.target.value)} />
                                 </div>
                                 <div className="formInput">
 
                                     <label>Price</label>
-                                    <input type="text" value={products[selectedIndex].price}
-                                        onChange={(e) => setProductID(e.target.value)} />
+                                    <input type="text" value={price}
+                                        onChange={(e) => setPrice(e.target.value)} />
                                 </div>
-                                <button onClick={() =>
-                                    handleUpdate()}
-                                >Update</button>
-                            </form>
+                                {addNewProduct ? <button
+                                    onClick={() =>
+                                        handleNewProduct()}
+                                >Add</button> : <button onClick={() =>
+                                    handleUpdate(products[selectedIndex]._id)}
+                                >Update</button>}
+                            </div>
                         </div>
 
                     </div>
