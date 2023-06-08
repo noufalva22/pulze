@@ -19,6 +19,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 import { storage } from '../../firebase/config';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import imageCompression from "browser-image-compression";
 const Products = () => {
 
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -40,6 +41,12 @@ const Products = () => {
     const [addNewProduct, setAddNewProduct] = useState(false)
 
     const [newImages, setNewImages] = useState([]);
+
+
+    const [newImagesSmall, setNewImagesSmall] = useState();
+    const [newImagesThumbnail, setNewImagesThumbnail] = useState();
+    const [newImagesNormal, setNewImagesNormal] = useState();
+
     var loadFlag = 0
 
     const getProducts = async () => {
@@ -82,7 +89,7 @@ const Products = () => {
             console.log(res.data);
             handleNotification("Success", "Updated")
             getProducts()
-           
+
         } catch (error) {
             console.log(error);
             handleNotification("Error", error.message)
@@ -150,6 +157,77 @@ const Products = () => {
         }
 
     }
+
+    //Ensure large file not uploaded
+    const handleCompressImage = (e) => {
+
+        // e.preventDefault();
+        const options = {
+            maxSizeMB: 10,
+            // maxWidthOrHeight: 500,   
+            useWebWorker: true,
+        };
+
+        let output;
+        imageCompression(newImagesNormal, options).then((x) => {
+            output = x;
+            const downloadLink = URL.createObjectURL(output);
+            setNewImagesNormal(output);
+        });
+
+    };
+
+    const handleCompressImageSmallSize = (e) => {
+        console.log(newImages);
+        // e.preventDefault();
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 200,
+            useWebWorker: true,
+        };
+        let output;
+        imageCompression(newImagesNormal, options).then((x) => {
+            output = x;
+            const downloadLink = URL.createObjectURL(output);
+            setNewImagesSmall(output);
+
+            console.log("Compression Completed");
+
+        });
+
+    };
+    const handleCompressImageThumbnail = (e) => {
+        console.log(newImages);
+        // e.preventDefault();
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 50,
+            useWebWorker: true,
+        };
+        let output;
+        imageCompression(newImagesNormal, options).then((x) => {
+            output = x;
+            const downloadLink = URL.createObjectURL(output);
+            setNewImagesThumbnail(output);
+
+            console.log("Compression Completed");
+
+        });
+
+    };
+    useEffect(() => {
+        console.log(newImagesNormal);
+
+        if (newImagesNormal !== undefined && newImagesNormal !== null) {
+            console.log("123");
+            // handleCompressImage();
+            handleCompressImageSmallSize();
+            handleCompressImageThumbnail();
+
+        }
+
+    }, [newImagesNormal])
+
     const handleDeleteImage = async () => {
 
         if (products && products[selectedIndex] && products[selectedIndex].image) {
@@ -197,31 +275,11 @@ const Products = () => {
     };
 
 
-    // const handleCompressImage = (e) => {
 
-    //     // e.preventDefault();
-    //     const options = {
-    //         maxSizeMB: 10,
-    //         // maxWidthOrHeight: 500,   
-    //         useWebWorker: true,
-    //     };
-
-    //     let output;
-    //     imageCompression(newImage, options).then((x) => {
-    //         output = x;
-    //         const downloadLink = URL.createObjectURL(output);
-    //         setCompressedImage(output);
-
-    //         console.log("completed");
-
-    //     });
-
-    // };
-
-    // var fileName 
     const handleAddImage = (e) => {
 
         const file = e.target.files[0];
+        setNewImagesNormal(e.target.files[0])
         const fileName = file.name;
         setImageName(file.name)
         // setNewImages(e.target.files[0])
@@ -265,13 +323,13 @@ const Products = () => {
 
     //update firebase image link in db
 
-    const updateProductImage = async (link) => {
+    const updateProductImage = async (link, type) => {
 
         console.log(link);
         console.log(products[selectedIndex]._id);
 
         try {
-            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/update-image`, {
+            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/update-image/${type}`, {
                 link,
             });
 
@@ -294,6 +352,8 @@ const Products = () => {
     const handleUploadImage = async (index) => {
         console.log("upload Starts", newImages);
         console.log("Image name", newImages[index].name);
+
+        //UPLOAD IMAGE ACTUAL
         const storageRef = ref(storage, `Product-Images/Normal/${productID}/${imageName}`);
         const uploadTask = uploadBytesResumable(storageRef, newImages[index], metadata);
 
@@ -339,14 +399,129 @@ const Products = () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 
                     console.log('File available at', downloadURL);
-
-                    updateProductImage(downloadURL).then(() => {
+                        updateProductImage(downloadURL, "Normal").then(() => {
                         console.log("dowld url", downloadURL);
                         console.log(newImages)
                         // handleDeleteNewImage(index)
-                        products[selectedIndex].image.push({ src: downloadURL });
-                        console.log("new pro", products);
-                        setNewImages([]);    
+                        products[selectedIndex].image.push({ src: downloadURL })
+                        getProducts()
+                        // setNewImages([])
+
+                    })
+                    console.log("123");
+
+                });
+            }
+        );
+
+        //UPLOAD IMAGE SMALL
+        const storageRefSmall = ref(storage, `Product-Images/LowQuality/${productID}/${imageName}`);
+        const uploadTaskSmall = uploadBytesResumable(storageRefSmall, newImagesSmall, metadata);
+
+        uploadTaskSmall.on('state_changed',
+            (snapshot) => {
+                console.log("size is", snapshot.totalBytes);
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const uploadStatus = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + uploadStatus + '% done');
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+                setProgress(uploadStatus => uploadStatus + 0);
+                setProgress(uploadStatus);
+            },
+            (error) => {
+                // A full list of error codes is available at
+
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        break;
+                    case 'storage/canceled':
+                        // User canceled the upload
+                        break;
+
+                    // ...
+
+                    case 'storage/unknown':
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                }
+            },
+            () => {
+                // Upload completed successfully, now we can get the download URL
+                getDownloadURL(uploadTaskSmall.snapshot.ref).then((downloadURL) => {
+
+                    console.log('File available at', downloadURL);
+
+                    updateProductImage(downloadURL, "Small").then(() => {
+                        console.log("dowld url", downloadURL);
+                        console.log(newImages)
+                        // handleDeleteNewImage(index)
+
+
+                    })
+                    console.log("123");
+
+                });
+            }
+        );
+        //UPLOAD IMAGE THUMBNAIL
+        const storageRefThumbnail = ref(storage, `Product-Images/Thumbnail/${productID}/${imageName}`);
+        const uploadTaskThumbnail = uploadBytesResumable(storageRefThumbnail, newImagesThumbnail, metadata);
+
+        uploadTaskThumbnail.on('state_changed',
+            (snapshot) => {
+                console.log("size is", snapshot.totalBytes);
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const uploadStatus = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + uploadStatus + '% done');
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+                setProgress(uploadStatus => uploadStatus + 0);
+                setProgress(uploadStatus);
+            },
+            (error) => {
+                // A full list of error codes is available at
+
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        break;
+                    case 'storage/canceled':
+                        // User canceled the upload
+                        break;
+
+                    // ...
+
+                    case 'storage/unknown':
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                }
+            },
+            () => {
+                // Upload completed successfully, now we can get the download URL
+                getDownloadURL(uploadTaskThumbnail.snapshot.ref).then((downloadURL) => {
+
+                    console.log('File available at', downloadURL);
+
+                    updateProductImage(downloadURL, "Thumbnail").then(() => {
+                        console.log("dowld url", downloadURL);
+                        console.log(newImages)
+                        // handleDeleteNewImage(index)
+
+                        setNewImages([]);
                     })
                     console.log("123");
 
@@ -502,7 +677,7 @@ const Products = () => {
                             </div>
                             <div className="action">
                                 <label htmlFor="file" >
-                                    <DriveFolderUploadIcon className='icon' style={ newImages.length >0 ? {display: "none" }:{display: "unset"}}/>
+                                    <DriveFolderUploadIcon className='icon' style={newImages.length > 0 ? { display: "none" } : { display: "unset" }} />
                                 </label>
                                 <input type="file" id="file" onChange={handleAddImage} style={{ display: "none" }} />
                                 <DeleteIcon className='icon' onClick={handleDeleteImage} />
