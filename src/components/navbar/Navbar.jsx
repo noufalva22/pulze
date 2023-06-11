@@ -29,7 +29,7 @@ const Navbar = () => {
                     <SearchOutlinedIcon />
 
                 </div>
-                <div className="items">
+                {/* <div className="items">
                     <div className="item">
                         <LanguageOutlinedIcon className='icon' />
                         English
@@ -67,7 +67,7 @@ const Navbar = () => {
                             className="avatar" />
 
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )

@@ -12,6 +12,7 @@ import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSyst
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Link } from 'react-router-dom';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 const Sidebar = () => {
     return (
         <div className='sidebar'>
@@ -23,6 +24,10 @@ const Sidebar = () => {
             </div>
             <hr />
             <div className="centre">
+                <div className="arrow">
+
+                    <KeyboardDoubleArrowLeftIcon  className='arrowElement'/>
+                </div>
                 <ul>
                     <p className='title'>MAIN</p>
                     <Link to="/" style={{ textDecoration: "none" }}>

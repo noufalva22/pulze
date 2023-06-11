@@ -83,6 +83,13 @@ const UserDatatable = () => {
         },
     ];
     const getRowId = (row) => row._id;
+    const sortModel = [
+        // Define the default sorting
+        {
+          field: 'createdAt',
+          sort: 'desc', // Change to 'asc' for ascending order
+        },
+      ];
     return (
         <div className="datatable">
             <div className="datatableTitle">
@@ -116,6 +123,7 @@ const UserDatatable = () => {
                     rowsPerPageOptions={[9]}
                     checkboxSelection
                     getRowId={getRowId}
+                    // sortModel={sortModel} 
 
                 />}
         </div>

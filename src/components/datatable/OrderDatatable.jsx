@@ -16,7 +16,7 @@ const OrderDatatable = () => {
     const [deleteItemId, setDeleteItemId] = useState(null);
 
     const handleDelete = (id) => {
-        
+
         setData(data.filter((item) => item._id !== id));
 
         const deleteUser = async () => {
@@ -42,45 +42,42 @@ const OrderDatatable = () => {
         try {
             const res = await publicRequest.get(`/userData/search`, { startDate, endDate })
             setData(res.data);
-            
+
         } catch (error) {
             console.log(error);
-            
+
         }
     };
-    
-    
+
+
     const cancelDelete = () => {
         // Close the confirmation pop-up without deleting
         setShowConfirmation(false);
         setDeleteItemId(null);
     };
 
-
     useEffect(() => {
-
-        if (data === null || data === undefined || data === '') {
-
-
+        if (!data || data.length === 0) {
             const getOrder = async () => {
-
                 try {
-                    const res = await publicRequest.get('/order/')
-                    console.log(res.data);
+                    const res = await publicRequest.get('/order/');
+                    console.log("Order Data", res.data);
 
                     const formattedData = res.data.map((item, index) => {
                         const formattedDate = new Date(item.createdAt).toLocaleDateString("en-GB");
                         return { ...item, createdAt: formattedDate, key: index };
                     });
+                    // formattedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    // console.log("sorted data", formattedData);
                     setData(formattedData);
-
                 } catch (error) {
                     console.log(error);
                 }
-            }
-            getOrder()
+            };
+            getOrder();
         }
-    })
+    }, [data]);
+
     const actionColumn = [
         {
             field: "action",
@@ -110,6 +107,13 @@ const OrderDatatable = () => {
         },
     ];
     const getRowId = (row) => row._id;
+    const sortModel = [
+        // Define the default sorting
+        {
+          field: 'orderID',
+          sort: 'desc', // Change to 'asc' for ascending order
+        },
+      ];
     return (
         <div className="datatable">
             <div className="datatableTitle">
@@ -143,13 +147,14 @@ const OrderDatatable = () => {
                     rowsPerPageOptions={[9]}
                     checkboxSelection
                     getRowId={getRowId}
+                    // sortModel={sortModel} 
 
                 />}
             {showConfirmation && (
                 <div className="confirmationPopup">
                     <div className="confirmationMessage">Are you sure?</div>
                     <div className="confirmationButtons">
-                        <button onClick={() => {handleDelete(deleteItemId)}}>Yes</button>
+                        <button onClick={() => { handleDelete(deleteItemId) }}>Yes</button>
                         <button onClick={cancelDelete}>No</button>
                     </div>
                 </div>

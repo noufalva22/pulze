@@ -23,6 +23,17 @@
     }
 
     .centre {
+        .arrow {
+            position: relative;
+            z-index: 999;
+            cursor: pointer;
+            .arrowElement {
+                position: absolute;
+                left: 94px;
+                top: -15px;
+            }
+        }
+
         padding-left: 10px;
 
         ul {
@@ -30,41 +41,46 @@
             margin: 0;
             padding: 0;
 
-            .title{
+            .title {
                 font-size: 10px;
                 font-weight: bold;
                 color: #999;
                 margin-top: 15px;
                 margin-bottom: 5px;
             }
-            li{
+
+            li {
                 display: flex;
                 align-items: center;
                 padding: 4px;
                 cursor: pointer;
 
-                &:hover{
+                &:hover {
                     background-color: rgba(215, 217, 218, 0.332);
                 }
-                .icon{
+
+                .icon {
                     font-size: 18px;
                     color: #7451f8;
                 }
-                span{
+
+                span {
                     font-size: 15px;
                     font-weight: 500;
                     color: #888;
-                    margin-left: 10px;  
+                    margin-left: 10px;
                 }
 
             }
         }
     }
-    .bottom{
+
+    .bottom {
         display: flex;
         align-items: center;
         margin: 10px;
-        .colorOption{
+
+        .colorOption {
             width: 20px;
             height: 20px;
             border-radius: 5px;
@@ -72,13 +88,15 @@
             cursor: pointer;
 
             margin: 5px;
-            &:nth-child(1){
+
+            &:nth-child(1) {
                 background-color: white;
-                
+
             }
-            &:nth-child(2){
+
+            &:nth-child(2) {
                 background-color: rgb(0, 0, 0);
-                
+
             }
 
         }
