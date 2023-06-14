@@ -24,6 +24,8 @@ const Widget = ({ type }) => {
     const [orderLast30Days, setOrderLast30Days] = useState([]);
     const [userToday, setUserToday] = useState([]);
     const [userLast30Days, setUserLast30Days] = useState([]);
+    const [tapToday, setTapToday] = useState([]);
+    const [tapLast30Days, setTapLast30Days] = useState([]);
 
     const getOrderData = async () => {
         try {
@@ -36,7 +38,7 @@ const Widget = ({ type }) => {
             // Filter orders for the last 30 days
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-             // Get the date 30 days ago from today
+            // Get the date 30 days ago from today
             const ordersLast30Days = res.data.filter(order => {
                 const orderDate = new Date(order.createdAt);
                 return orderDate >= thirtyDaysAgo;
@@ -52,20 +54,44 @@ const Widget = ({ type }) => {
         try {
             const res = await publicRequest.get(`/userData`)
             setALL_USER(res.data)
-             // Filter orders for today
-             const today = new Date().toISOString().split('T')[0]; // Get today's date in the format 'YYYY-MM-DD'
-             const userToday = res.data.filter(user => user.createdAt.startsWith(today));
-             setUserToday(userToday);
-             // Filter users for the last 30 days
-             const thirtyDaysAgo = new Date();
-             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-              // Get the date 30 days ago from today
-             const usersLast30Days = res.data.filter(user => {
-                 const userDate = new Date(user.createdAt);
-                 return userDate >= thirtyDaysAgo;
-             });
- 
-             setUserLast30Days(usersLast30Days);
+            // Filter orders for today
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in the format 'YYYY-MM-DD'
+            const userToday = res.data.filter(user => user.createdAt.startsWith(today));
+            setUserToday(userToday);
+            // Filter users for the last 30 days
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            // Get the date 30 days ago from today
+            const usersLast30Days = res.data.filter(user => {
+                const userDate = new Date(user.createdAt);
+                return userDate >= thirtyDaysAgo;
+            });
+
+            setUserLast30Days(usersLast30Days);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const getTapData = async () => {
+        try {
+            const res = await publicRequest.get(`/userLog`)
+            setALL_TAPS(res.data)
+            // Filter orders for today
+            const today = new Date().toISOString().split('T')[0]; 
+            // Get today's date in the format 'YYYY-MM-DD'
+            const tapToday = res.data.filter(user => user.createdAt.startsWith(today));
+            setTapToday(tapToday);
+            // Filter users for the last 30 days
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            // Get the date 30 days ago from today
+            const tapLast30Days = res.data.filter(tap => {
+                const tapDate = new Date(tap.createdAt);
+                return tapDate >= thirtyDaysAgo;
+            });
+
+            setTapLast30Days(tapLast30Days);
 
         } catch (error) {
             console.log(error);
@@ -74,6 +100,7 @@ const Widget = ({ type }) => {
     useEffect(() => {
         getOrderData();
         getUserData();
+        getTapData();
     }, []);
     useEffect(() => {
         if (ALL_ORDER) {
@@ -119,8 +146,8 @@ const Widget = ({ type }) => {
         case "taps":
             data = {
                 title: "TAPS",
-                FTD: 3,
-                MTD: 25,
+                FTD: tapToday?.length,
+                MTD: tapLast30Days?.length,
                 link: "View all taps",
                 icons: <ContactlessOutlinedIcon className='icon' style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }} />
 

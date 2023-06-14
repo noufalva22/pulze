@@ -10,7 +10,7 @@ import Table from '../../components/table/Table'
 const Home = () => {
     return (
         <div className='home'>
-            {/* <Sidebar /> */}
+            <Sidebar />
             <div className="homeContainer">
                 <Navbar />
                 <div className="widgets">
@@ -20,7 +20,8 @@ const Home = () => {
                     <Widget type="balance" />
                 </div>
                 <div className="charts">
-                    {/* <Featured /> */}
+                    <Featured />
+                    <Table />
                     {/* <Chart title="Last 6 Months (Revenue)" aspect={2 / 1} /> */}
                 </div>
                 {/* <div className="listContainer">

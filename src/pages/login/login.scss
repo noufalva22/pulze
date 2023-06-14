@@ -1,0 +1,100 @@
+.loginPage {
+    display: flex;
+
+    .left {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        /* justify-content: center; */
+        height: 100vh;
+        width: 100vw;
+
+        .container {
+            margin: 0px 100px;
+            width: 100%;
+            /* align-items: center; */
+            gap: 20px;
+            display: flex;
+            flex-direction: column;
+
+            input {
+                width: 90%;
+                padding: 5px;
+                border: none;
+                border-bottom: 1px solid gray;
+                outline: none;
+                color: #4f4e4e;
+                font-size: 15px;
+            }
+
+            button {
+                padding: 10px;
+                border: none;
+                background-color: teal;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 10px;
+                width: 40%;
+            }
+
+            .items {
+
+                h2 {
+                    color: #c777b9;
+                    font-size: 30px;
+                }
+
+                span {
+                    font-size: 10px;
+                    color: darkgray;
+                }
+            }
+
+            .itemsAction {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-right: 24px;
+
+                span {
+                    color: gray;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    .right {
+        flex: 1;
+        background-image: linear-gradient(to right top,
+                #d16ba5, #c777b9, #ba83ca, #aa8fd8,
+                #9a9ae1, #88a4e9, #75aded, #63b6ee,
+                #48c0ed, #33c8e6, #35d0db, #4bd6cd);
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 63px;
+
+        .element {
+            display: flex;
+
+            flex-direction: column;
+            align-items: center;
+
+            color: white;
+
+            h2 {
+                font-weight: 900;
+                font-size: 24px;
+            }
+
+            img {
+                height: 160px;
+            }
+        }
+
+    }
+}
