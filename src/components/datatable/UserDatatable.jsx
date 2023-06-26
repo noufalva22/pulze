@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { publicRequest } from '../../requestMethods';
 import { Button, TextField } from "@mui/material";
 import { DatePicker } from "@mui/lab";
-
+import { Bars } from 'react-loader-spinner'
 const UserDatatable = () => {
     const [data, setData] = useState();
     const [startDate, setStartDate] = useState();
@@ -16,7 +16,9 @@ const UserDatatable = () => {
         const deleteUser = async () => {
 
             try {
-                const res = await publicRequest.delete(`/userData/${id}`)
+                const res = await publicRequest.delete(`/userData/${id}`, {
+                    withCredentials: true
+                })
                 console.log(res.data);
 
                 // setData(res.data)
@@ -45,7 +47,9 @@ const UserDatatable = () => {
             const getUser = async () => {
 
                 try {
-                    const res = await publicRequest.get('/userData/')
+                    const res = await publicRequest.get('/userData/', {
+                        withCredentials: true
+                    })
                     console.log(res.data);
                     const formattedData = res.data.map((item, index) => {
                         const formattedDate = new Date(item.createdAt).toLocaleDateString("en-GB");
@@ -86,10 +90,10 @@ const UserDatatable = () => {
     const sortModel = [
         // Define the default sorting
         {
-          field: 'createdAt',
-          sort: 'desc', // Change to 'asc' for ascending order
+            field: 'createdAt',
+            sort: 'desc', // Change to 'asc' for ascending order
         },
-      ];
+    ];
     return (
         <div className="datatable">
             <div className="datatableTitle">
@@ -99,33 +103,33 @@ const UserDatatable = () => {
                 </Link>
             </div>
             <div className="datePickerContainer">
-                <DatePicker
-                    label="Start Date"
-                    value={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    renderInput={(params) => <TextField {...params} />}
-                />
-                <DatePicker
-                    label="End Date"
-                    value={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    renderInput={(params) => <TextField {...params} />}
-                />
+
 
                 {/* <button onClick={handleUpdateSearch}>update</button> */}
             </div>
-            {data &&
-                <DataGrid
-                    className="datagrid"
-                    rows={data}
-                    columns={userColumns.concat(actionColumn)}
-                    pageSize={9}
-                    rowsPerPageOptions={[9]}
-                    checkboxSelection
-                    getRowId={getRowId}
+            <div className="grid">
+
+                {data ?
+                    <DataGrid
+                        className="datagrid"
+                        rows={data}
+                        columns={userColumns.concat(actionColumn)}
+                        pageSize={9}
+                        rowsPerPageOptions={[9]}
+                        checkboxSelection
+                        getRowId={getRowId}
                     // sortModel={sortModel} 
 
-                />}
+                    /> : <div className="loader">
+
+                        <div class="loading">
+                            <svg width="64px" height="48px">
+                                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+                                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+                            </svg>
+                        </div>
+                    </div>}
+            </div>
         </div>
     )
 }

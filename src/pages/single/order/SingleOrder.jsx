@@ -40,7 +40,9 @@ const SingleOrder = () => {
                 //FETCH ORDER  DATA
                 const getOrderData = async () => {
                     try {
-                        const res = await publicRequest.get(`/order/${orderID}`)
+                        const res = await publicRequest.get(`/order/${orderID}`, {
+                            withCredentials: true
+                        })
                         setOrderData(res.data)
                         console.log("Order Data", res.data);
                         setEmail(res.data.emailId)

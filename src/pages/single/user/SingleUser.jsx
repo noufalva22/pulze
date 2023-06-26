@@ -46,7 +46,9 @@ const SingleUser = () => {
         //FETCH ALL ORDER DATA BY EMAIL
         const getOrders = async () => {
           try {
-            const res = await publicRequest.get(`/order/get/${EMAIL}`)
+            const res = await publicRequest.get(`/order/get/${EMAIL}`, {
+              withCredentials: true
+          })
             setOrderData(res.data)
             console.log("User order data", res.data);
 

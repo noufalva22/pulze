@@ -27,7 +27,7 @@ function App() {
             <Route path="login" element={<Login />} />
 
             <Route path="users">
-              <Route index element={<List page="users"/>} />
+              <Route index element={<List page="users" />} />
               <Route path=":userId" element={<SingleUser />} />
               <Route
                 path="new"
@@ -35,16 +35,25 @@ function App() {
               />
             </Route>
             <Route path="orders">
-              <Route index element={<List page="orders"/>} />
+              <Route index element={<List page="orders" />} />
               <Route path=":orderId" element={<SingleOrder />} />
               <Route
                 path="new"
                 element={<New inputs={userInputs} title="Add New User" />}
               />
             </Route>
+            <Route path="taps">
+              <Route index element={<List page="taps" />} />
+
+            </Route>
+
+            <Route path="websiteTraffic">
+              <Route index element={<List page="websiteTraffic" />} />
+
+            </Route>
 
             <Route path="products">
-              <Route index element={<Products/>} />
+              <Route index element={<Products />} />
               {/* <Route path=":productId" element={<Single />} /> */}
               <Route
                 path="new"
@@ -52,9 +61,10 @@ function App() {
               />
             </Route>
 
+
             <Route path="delhivery">
-              <Route index element={<DelhiveryIntegration/>} />
-              
+              <Route index element={<DelhiveryIntegration />} />
+
             </Route>
 
           </Route>

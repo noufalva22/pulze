@@ -11,9 +11,13 @@ import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import { logout } from '../../redux/userRedux';
+import { useDispatch } from 'react-redux';
 const Sidebar = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate("")
     return (
         <div className='sidebar'>
             <div className="top">
@@ -62,13 +66,21 @@ const Sidebar = () => {
                         </li>
                     </Link>
                     <p className='title'>USEFUL</p>
+                    <Link to="/taps" style={{ textDecoration: "none" }}>
+                        <li>
+                            <ContactlessOutlinedIcon className="icon" /><span>
+                                Taps</span>
+                        </li>
+                    </Link>
+                    <Link to="/websiteTraffic" style={{ textDecoration: "none" }}>
 
+                        <li>
+                            <SaveOutlinedIcon className="icon" /><span>Website Traffic</span>
+                        </li>
+                    </Link>
                     <li>
-                        <ContactlessOutlinedIcon className="icon" /><span>
-                            Taps</span>
-                    </li>
-                    <li>
-                        <SaveOutlinedIcon className="icon" /><span>Log</span>
+                        <SettingsSystemDaydreamOutlinedIcon className="icon" />
+                        <span> Log</span>
                     </li>
                     <p className='title'>SERVICE</p>
                     <li>
@@ -90,7 +102,12 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <ExitToAppIcon className="icon" />
-                        <span>Logout</span>
+                        <span onClick={() => {
+                            dispatch(logout())
+                            navigate({
+                                pathname: '/login'
+                            })
+                        }}>Logout</span>
                     </li>
                 </ul>
             </div>

@@ -46,6 +46,44 @@ export const userColumns = [
     },
 
   ];
+
+  export const tapsColumns = [
+    { field: "name", headerName: "Name", width: 150 },
+ 
+    {
+      field: "email",
+      headerName: "Email",
+      width: 230,
+    },
+  
+    {
+      field: "username",
+      headerName: "Username",
+      width: 100,
+    },
+    {
+      field: "createdAt",
+      headerName: "Created Date",
+      width: 150,
+    },
+
+  ];
+  export const websiteTrafficColumns = [
+    {
+      field: "source",
+      headerName: "Source",
+      width: 100,
+    },
+    { field: "ip", headerName: "IP", width: 150 },
+    
+    {
+      field: "createdAt",
+      headerName: "Created Date",
+      width: 150,
+    },
+
+  ];
+
   //temporary data
     export const userRows = [
       {

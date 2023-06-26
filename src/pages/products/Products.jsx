@@ -52,7 +52,9 @@ const Products = () => {
     const getProducts = async () => {
 
         try {
-            const res = await publicRequest.get(`/products`)
+            const res = await publicRequest.get(`/products`, {
+                withCredentials: true
+            })
             setProducts(res.data)
             if (res.data.length == 0) {
                 setAddNewProduct(true)
@@ -85,7 +87,9 @@ const Products = () => {
 
         }
         try {
-            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}`, newProductData);
+            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}`, newProductData, {
+                withCredentials: true
+            });
             console.log(res.data);
             handleNotification("Success", "Updated")
             getProducts()
@@ -141,7 +145,9 @@ const Products = () => {
         }
         console.log("pro data", productData);
         try {
-            const res = await publicRequest.post('/products/', productData)
+            const res = await publicRequest.post('/products/', productData, {
+                withCredentials: true
+            })
             console.log(res.data);
             getProducts()
             setSuccessMessage("Added")
@@ -331,6 +337,8 @@ const Products = () => {
         try {
             const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/update-image/${type}`, {
                 link,
+            }, {
+                withCredentials: true
             });
 
             console.log(res.data)
@@ -399,7 +407,7 @@ const Products = () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 
                     console.log('File available at', downloadURL);
-                        updateProductImage(downloadURL, "Normal").then(() => {
+                    updateProductImage(downloadURL, "Normal").then(() => {
                         console.log("dowld url", downloadURL);
                         console.log(newImages)
                         // handleDeleteNewImage(index)
@@ -532,7 +540,9 @@ const Products = () => {
     const handleDeleteProduct = async () => {
 
         try {
-            const res = await publicRequest.delete(`/products/${products[selectedIndex]._id}`)
+            const res = await publicRequest.delete(`/products/${products[selectedIndex]._id}`, {
+                withCredentials: true
+            })
             console.log(res.data);
             setSelectedIndex(prevIndex => prevIndex - 1)
             setSuccessMessage("Deleted")

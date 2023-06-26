@@ -1,7 +1,12 @@
 .datatable {
     height: 600px;
     padding: 20px;
-    
+    .loader{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 46vh;
+    }
     .datatableTitle{
       width: 100%;
       font-size: 24px;
@@ -76,10 +81,39 @@
       }
     }
   }
+ 
   .cellAction {
     position: relative;
   }
+  .loading svg polyline {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
   
+  .loading svg polyline#back {
+    fill: none;
+    stroke: #ff4d5033;
+  }
+  
+  .loading svg polyline#front {
+    fill: none;
+    stroke: #0051ff;
+    stroke-dasharray: 48, 144;
+    stroke-dashoffset: 192;
+    animation: dash_682 1.4s linear infinite;
+  }
+  
+  @keyframes dash_682 {
+    72.5% {
+      opacity: 0;
+    }
+  
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
   .deleteButton {
     cursor: pointer;
     color: red;

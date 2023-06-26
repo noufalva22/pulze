@@ -17,11 +17,11 @@ const Home = () => {
                     <Widget type="orders" />
                     <Widget type="users" />
                     <Widget type="taps" />
-                    <Widget type="balance" />
+                    <Widget type="websiteTraffic" />
                 </div>
                 <div className="charts">
-                    <Featured />
-                    <Table />
+                    {/* <Featured /> */}
+                    {/* <Table /> */}
                     {/* <Chart title="Last 6 Months (Revenue)" aspect={2 / 1} /> */}
                 </div>
                 {/* <div className="listContainer">

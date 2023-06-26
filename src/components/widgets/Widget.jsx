@@ -9,10 +9,19 @@ import { publicRequest } from '../../requestMethods';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useCookies } from 'react-cookie';
 const Widget = ({ type }) => {
+
     let data;
     //temporary
     const navigate = useNavigate();
+    const [cookies, setCookie] = useCookies(['access_token']);
+    // console.log("123", cookies.access_token);
+    const adminEmail = useSelector((state) => state.userAdmin.email)
+    const isAdmin = useSelector((state) => state.userAdmin.isAdmin)
+    const _id = useSelector((state) => state.userAdmin._id)
+
     const amount = 100;
     const diff = 20;
     const [ALL_ORDER, setALL_ORDER] = useState()
@@ -27,9 +36,20 @@ const Widget = ({ type }) => {
     const [tapToday, setTapToday] = useState([]);
     const [tapLast30Days, setTapLast30Days] = useState([]);
 
+    const [websiteTrafficToday, setWebsiteTrafficToday] = useState([]);
+    const [websiteTraffic30Days, setWebsiteTraffic30Days] = useState([]);
+    
+    useEffect(() => {
+        const token = cookies.access_token;
+        console.log("123", cookies.access_token);
+    }, [cookies.access_token]);
+
     const getOrderData = async () => {
         try {
-            const res = await publicRequest.get(`/order`)
+            const res = await publicRequest.get(`/order/`, {
+                withCredentials: true
+            })
+            console.log("orders is", res.data);
             setALL_ORDER(res.data)
             // Filter orders for today
             const today = new Date().toISOString().split('T')[0]; // Get today's date in the format 'YYYY-MM-DD'
@@ -52,7 +72,9 @@ const Widget = ({ type }) => {
     }
     const getUserData = async () => {
         try {
-            const res = await publicRequest.get(`/userData`)
+            const res = await publicRequest.get(`/userData`, {
+                withCredentials: true
+            })
             setALL_USER(res.data)
             // Filter orders for today
             const today = new Date().toISOString().split('T')[0]; // Get today's date in the format 'YYYY-MM-DD'
@@ -75,10 +97,12 @@ const Widget = ({ type }) => {
     }
     const getTapData = async () => {
         try {
-            const res = await publicRequest.get(`/userLog`)
+            const res = await publicRequest.get(`/log`, {
+                withCredentials: true
+            })
             setALL_TAPS(res.data)
             // Filter orders for today
-            const today = new Date().toISOString().split('T')[0]; 
+            const today = new Date().toISOString().split('T')[0];
             // Get today's date in the format 'YYYY-MM-DD'
             const tapToday = res.data.filter(user => user.createdAt.startsWith(today));
             setTapToday(tapToday);
@@ -97,10 +121,35 @@ const Widget = ({ type }) => {
             console.log(error);
         }
     }
+    const getWebsiteVisitLog = async () => {
+        try {
+            const res = await publicRequest.get(`/websiteLog`, {
+                withCredentials: true
+            })
+            setWebsiteTraffic(res.data)
+            const today = new Date().toISOString().split('T')[0];
+            const websiteTrafficToday = res.data.filter(user => user.createdAt.startsWith(today));
+            setWebsiteTrafficToday(websiteTrafficToday);
+
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            const websiteTrafficLast30Days = res.data.filter(tap => {
+                const tapDate = new Date(tap.createdAt);
+                return tapDate >= thirtyDaysAgo;
+            });
+
+            setWebsiteTraffic30Days(websiteTrafficLast30Days);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
     useEffect(() => {
         getOrderData();
         getUserData();
         getTapData();
+        getWebsiteVisitLog()
     }, []);
     useEffect(() => {
         if (ALL_ORDER) {
@@ -154,11 +203,11 @@ const Widget = ({ type }) => {
 
             };
             break;
-        case "balance":
+        case "websiteTraffic":
             data = {
                 title: "WEBSITE TRAFFIC",
-                FTD: 6,
-                MTD: 25,
+                FTD: websiteTrafficToday?.length,
+                MTD: websiteTraffic30Days?.length,
                 link: " See details",
                 icons: <ForkRightOutlinedIcon className='icon' style={{
                     backgroundColor: "rgba(128, 0, 128, 0.2)",
