@@ -11,9 +11,9 @@ const Home = () => {
     return (
         <div className='home'>
             <Sidebar />
-            {/* <div className="homeContainer"> */}
-                {/* <Navbar /> */}
-                {/* <div className="widgets">
+            <div className="homeContainer">
+                <Navbar />
+                <div className="widgets">
                     <Widget type="orders" />
                     <Widget type="users" />
                     <Widget type="taps" />
@@ -27,8 +27,8 @@ const Home = () => {
                 <div className="listContainer">
                     <div className="listTitle">Latest transactions</div>
                     <Table />
-                </div> */}
-            {/* </div> */}
+                </div>
+            </div>
         </div>
     )
 }
