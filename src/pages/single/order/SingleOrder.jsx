@@ -5,7 +5,7 @@ import Navbar from "../../../components/navbar/Navbar";
 // import List from "../../components/table/Table";
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { publicRequest } from '../../../requestMethods';
+import { adminRequest } from '../../../requestMethods';
 import { Bars } from 'react-loader-spinner'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 // import '../../../../public/Theme/Theme-1/'
@@ -40,7 +40,7 @@ const SingleOrder = () => {
                 //FETCH ORDER  DATA
                 const getOrderData = async () => {
                     try {
-                        const res = await publicRequest.get(`/order/${orderID}`, {
+                        const res = await adminRequest.get(`/order/${orderID}`, {
                             withCredentials: true
                         })
                         setOrderData(res.data)
@@ -65,7 +65,7 @@ const SingleOrder = () => {
         const GET_USER_ALLDATA = async () => {
             try {
 
-                const res = await publicRequest.get(`/userData/find/${email}`)
+                const res = await adminRequest.get(`/userData/find/${email}`)
                 SET_USERALLDATA(res.data)
 
             } catch (error) {
@@ -81,7 +81,7 @@ const SingleOrder = () => {
             //get once userdata of a user. username will be associated with ordered id
             const getUserData = async () => {
                 try {
-                    const res = await publicRequest.get(`/userData/get/${username}`)
+                    const res = await adminRequest.get(`/userData/get/${username}`)
                     setUserData(res.data)
                     console.log("User Data", res.data);
                 } catch (error) {

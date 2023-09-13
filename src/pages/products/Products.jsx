@@ -9,7 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { publicRequest } from '../../requestMethods';
+import { adminRequest } from '../../requestMethods';
 import { Bars } from 'react-loader-spinner'
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,8 +20,13 @@ import { storage } from '../../firebase/config';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import imageCompression from "browser-image-compression";
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Button, TextField } from "@mui/material";
 const Products = () => {
-
+    const navigate = useNavigate();
+    const email = useSelector((state) => state.userAdmin.email);
+    const [showLogin, setShowLogin] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [products, setProducts] = useState()
     const [selectedProduct, setSelectedProduct] = useState()
@@ -37,7 +42,7 @@ const Products = () => {
     const [price, setPrice] = useState()
     const [errorMessage, setErrorMessage] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
-
+    const [password, setPassword] = useState("");
     const [addNewProduct, setAddNewProduct] = useState(false)
 
     const [newImages, setNewImages] = useState([]);
@@ -52,7 +57,7 @@ const Products = () => {
     const getProducts = async () => {
 
         try {
-            const res = await publicRequest.get(`/products`, {
+            const res = await adminRequest.get(`/products`, {
                 withCredentials: true
             })
             setProducts(res.data)
@@ -87,7 +92,7 @@ const Products = () => {
 
         }
         try {
-            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}`, newProductData, {
+            const res = await adminRequest.put(`/products/${products[selectedIndex]._id}`, newProductData, {
                 withCredentials: true
             });
             console.log(res.data);
@@ -96,7 +101,18 @@ const Products = () => {
 
         } catch (error) {
             console.log(error);
-            handleNotification("Error", error.message)
+            handleNotification("Error", error.response.data)
+            if (error.response.data == `You're not authenticated!`) {
+                console.log("No login", email);
+                if (email === null || email === undefined) {
+                    navigate({
+                        pathname: '/login',
+                    });
+                } else {
+
+                    setShowLogin(true);
+                }
+            }
         }
     }
     const handleNotification = async (type, message) => {
@@ -145,7 +161,7 @@ const Products = () => {
         }
         console.log("pro data", productData);
         try {
-            const res = await publicRequest.post('/products/', productData, {
+            const res = await adminRequest.post('/products/', productData, {
                 withCredentials: true
             })
             console.log(res.data);
@@ -240,7 +256,7 @@ const Products = () => {
 
 
             try {
-                const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/delete-image`, {
+                const res = await adminRequest.put(`/products/${products[selectedIndex]._id}/delete-image`, {
                     //this index is image index
                     selectedIndex: selectedImg,
                 });
@@ -335,7 +351,7 @@ const Products = () => {
         console.log(products[selectedIndex]._id);
 
         try {
-            const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/update-image/${type}`, {
+            const res = await adminRequest.put(`/products/${products[selectedIndex]._id}/update-image/${type}`, {
                 link,
             }, {
                 withCredentials: true
@@ -540,7 +556,7 @@ const Products = () => {
     const handleDeleteProduct = async () => {
 
         try {
-            const res = await publicRequest.delete(`/products/${products[selectedIndex]._id}`, {
+            const res = await adminRequest.delete(`/products/${products[selectedIndex]._id}`, {
                 withCredentials: true
             })
             console.log(res.data);
@@ -552,6 +568,19 @@ const Products = () => {
             console.log(error, error.message)
             handleNotification("Error", error.message)
         }
+    }
+    const handleLogin = async () => {
+        try {
+
+            const res = await adminRequest.post('/auth/login', { email: email, password: password }, {
+                withCredentials: true
+            })
+            setShowLogin(false);
+        } catch (error) {
+            console.log(error);
+            setErrorMessage(error.message)
+        }
+
     }
 
 
@@ -570,6 +599,22 @@ const Products = () => {
                 draggable
                 pauseOnHover
             />
+
+            {showLogin && (
+                <div className="login-panel">
+                    <div className="login-container">
+                        <TextField
+                            type="password"
+                            label="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <button variant="contained" onClick={handleLogin}>
+                            Login
+                        </button>
+                    </div>
+                </div>
+            )}
             <Sidebar />
             <div className="singleProductContainer">
                 <Navbar />

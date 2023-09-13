@@ -3,7 +3,7 @@
     border-right: 0.5px solid #d3d3d3d1;
     min-height: 100vh;
     background-color: white;
-
+    // z-index: 999;
     .top {
         height: 50px;
         display: flex;
@@ -40,6 +40,10 @@
             list-style: none;
             margin: 0;
             padding: 0;
+            gap: 10px;
+            /* align-items: self-start; */
+            display: flex;
+            flex-direction: column;
 
             .title {
                 font-size: 10px;

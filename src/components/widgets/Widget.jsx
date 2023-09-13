@@ -5,7 +5,7 @@ import ForkRightOutlinedIcon from '@mui/icons-material/ForkRightOutlined';
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import ContactlessOutlinedIcon from '@mui/icons-material/ContactlessOutlined';
-import { publicRequest } from '../../requestMethods';
+import { adminRequest } from '../../requestMethods';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -46,7 +46,7 @@ const Widget = ({ type }) => {
 
     const getOrderData = async () => {
         try {
-            const res = await publicRequest.get(`/order/`, {
+            const res = await adminRequest.get(`/order/`, {
                 withCredentials: true
             })
             console.log("orders is", res.data);
@@ -72,7 +72,7 @@ const Widget = ({ type }) => {
     }
     const getUserData = async () => {
         try {
-            const res = await publicRequest.get(`/userData`, {
+            const res = await adminRequest.get(`/userData`, {
                 withCredentials: true
             })
             setALL_USER(res.data)
@@ -97,7 +97,7 @@ const Widget = ({ type }) => {
     }
     const getTapData = async () => {
         try {
-            const res = await publicRequest.get(`/log`, {
+            const res = await adminRequest.get(`/log`, {
                 withCredentials: true
             })
             setALL_TAPS(res.data)
@@ -123,7 +123,7 @@ const Widget = ({ type }) => {
     }
     const getWebsiteVisitLog = async () => {
         try {
-            const res = await publicRequest.get(`/websiteLog`, {
+            const res = await adminRequest.get(`/websiteLog`, {
                 withCredentials: true
             })
             setWebsiteTraffic(res.data)

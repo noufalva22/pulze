@@ -1,154 +1,197 @@
 .datatable {
-    height: 600px;
-    padding: 20px;
-    .loader{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 46vh;
-    }
-    .datatableTitle{
-      width: 100%;
-      font-size: 24px;
-      color: gray;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-  
-      .link{
-        text-decoration: none;
-        color: green;
-        font-size: 16px;
-        font-weight: 400;
-        border: 1px solid green;
-        padding: 5px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-    }
-  
-    .cellWithImg {
-      display: flex;
-      align-items: center;
-  
-      .cellImg {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 20px;
-      }
-    }
-  
-    .cellWithStatus {
+  height: 600px;
+  padding: 20px;
+
+  .loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 46vh;
+  }
+
+  .datatableTitle {
+    width: 100%;
+    font-size: 24px;
+    color: gray;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .link {
+      text-decoration: none;
+      color: green;
+      font-size: 16px;
+      font-weight: 400;
+      border: 1px solid green;
       padding: 5px;
       border-radius: 5px;
-  
-      &.active {
-        background-color: rgba(0, 128, 0, 0.05);
-        color: green;
-      }
-      &.pending {
-        background-color: rgba(255, 217, 0, 0.05);
-        color: goldenrod;
-      }
-      &.passive {
-        background-color: rgba(255, 0, 0, 0.05);
-        color: crimson;
-      }
-    }
-  
-    .cellAction {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-  
-      .viewButton {
-        padding: 2px 5px;
-        border-radius: 5px;
-        color: darkblue;
-        border: 1px dotted rgba(0, 0, 139, 0.596);
-        cursor: pointer;
-      }
-      
-      .deleteButton {
-        padding: 2px 5px;
-        border-radius: 5px;
-        color: crimson;
-        border: 1px dotted rgba(220, 20, 60, 0.6);
-        cursor: pointer;
-      }
+      cursor: pointer;
     }
   }
- 
-  .cellAction {
-    position: relative;
-  }
-  .loading svg polyline {
-    fill: none;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  
-  .loading svg polyline#back {
-    fill: none;
-    stroke: #ff4d5033;
-  }
-  
-  .loading svg polyline#front {
-    fill: none;
-    stroke: #0051ff;
-    stroke-dasharray: 48, 144;
-    stroke-dashoffset: 192;
-    animation: dash_682 1.4s linear infinite;
-  }
-  
-  @keyframes dash_682 {
-    72.5% {
-      opacity: 0;
-    }
-  
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-  .deleteButton {
-    cursor: pointer;
-    color: red;
-  }
-  
-  .confirmationPopup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .confirmationMessage {
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .confirmationButtons {
+
+  .cellWithImg {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    align-items: center;
+
+    .cellImg {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 20px;
+    }
   }
-  
+
+  .cellWithStatus {
+    padding: 5px;
+    border-radius: 5px;
+
+    &.active {
+      background-color: rgba(0, 128, 0, 0.05);
+      color: green;
+    }
+
+    &.pending {
+      background-color: rgba(255, 217, 0, 0.05);
+      color: goldenrod;
+    }
+
+    &.passive {
+      background-color: rgba(255, 0, 0, 0.05);
+      color: crimson;
+    }
+  }
+
+  .cellAction {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .viewButton {
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: darkblue;
+      border: 1px dotted rgba(0, 0, 139, 0.596);
+      cursor: pointer;
+    }
+
+    .deleteButton {
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: crimson;
+      border: 1px dotted rgba(220, 20, 60, 0.6);
+      cursor: pointer;
+    }
+  }
+}
+
+.cellAction {
+  position: relative;
+}
+
+.loading svg polyline {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.loading svg polyline#back {
+  fill: none;
+  stroke: #ff4d5033;
+}
+
+.loading svg polyline#front {
+  fill: none;
+  stroke: #0051ff;
+  stroke-dasharray: 48, 144;
+  stroke-dashoffset: 192;
+  animation: dash_682 1.4s linear infinite;
+}
+
+@keyframes dash_682 {
+  72.5% {
+    opacity: 0;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.deleteButton {
+  cursor: pointer;
+  color: red;
+}
+
+.confirmationPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.confirmationMessage {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.confirmationButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #ccc;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #aaa;
+}
+
+.login-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.login-container {
+  background-color: #fff;
+  padding: 20px;
+  text-align: center;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+
   button {
-    padding: 8px 16px;
-    background-color: #ccc;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid green;
+    border-radius: 5px;
+    color: green;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 5px;
+    text-decoration: none;
   }
-  
-  button:hover {
-    background-color: #aaa;
-  }
+}

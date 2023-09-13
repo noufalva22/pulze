@@ -5,6 +5,7 @@ import Chart from "../../../components/chart/Chart";
 import List from "../../../components/table/Table";
 import { useLocation } from "react-router-dom";
 import { publicRequest } from "../../../requestMethods";
+import { adminRequest } from "../../../requestMethods";
 import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -34,7 +35,7 @@ const SingleUser = () => {
         //FETCH ALL USER  DATA
         const getUserAllData = async () => {
           try {
-            const res = await publicRequest.get(`/userData/find/${EMAIL}`)
+            const res = await adminRequest.get(`/userData/find/${EMAIL}`)
             SET_USERALLDATA(res.data)
             console.log("User all Data", res.data);
 
@@ -46,7 +47,7 @@ const SingleUser = () => {
         //FETCH ALL ORDER DATA BY EMAIL
         const getOrders = async () => {
           try {
-            const res = await publicRequest.get(`/order/get/${EMAIL}`, {
+            const res = await adminRequest.get(`/order/get/${EMAIL}`, {
               withCredentials: true
           })
             setOrderData(res.data)

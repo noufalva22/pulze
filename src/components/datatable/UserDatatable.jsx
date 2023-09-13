@@ -1,16 +1,24 @@
 import './datatable.scss'
 import { DataGrid } from "@mui/x-data-grid";
 import { userColumns, userRows } from './userDatatablesource';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { publicRequest } from '../../requestMethods';
 import { Button, TextField } from "@mui/material";
 import { DatePicker } from "@mui/lab";
 import { Bars } from 'react-loader-spinner'
+import { useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const UserDatatable = () => {
     const [data, setData] = useState();
+    const navigate = useNavigate();
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
+    const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState()
+    const [showLogin, setShowLogin] = useState(false);
+    const email = useSelector((state) => state.userAdmin.email);
     const handleDelete = (id) => {
         setData(data.filter((item) => item._id !== id));
         const deleteUser = async () => {
@@ -38,6 +46,19 @@ const UserDatatable = () => {
             console.log(error);
         }
     };
+    const handleLogin = async () => {
+        try {
+
+            const res = await publicRequest.post('/auth/login', { email: email, password: password }, {
+                withCredentials: true
+            })
+            setShowLogin(false);
+        } catch (error) {
+            console.log(error);
+            setErrorMessage(error.message)
+        }
+
+    }
 
     useEffect(() => {
 
@@ -58,7 +79,19 @@ const UserDatatable = () => {
                     setData(formattedData);
 
                 } catch (error) {
-                    console.log(error);
+                    console.log(error.response.data);
+                    if (error.response.data == `You're not authenticated!`) {
+                        console.log("No login", email);
+                        if (email === null || email === undefined) {
+                            navigate({
+                                pathname: '/login',
+                            });
+                        } else {
+
+                            setShowLogin(true);
+                        }
+                    }
+
                 }
             }
             getUser()
@@ -94,8 +127,57 @@ const UserDatatable = () => {
             sort: 'desc', // Change to 'asc' for ascending order
         },
     ];
+
+
+    useEffect(() => {
+        if (errorMessage != "") {
+
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                icon: true,
+                theme: "colored",
+                // transition:"zoom",
+
+            });
+        }
+
+
+    }, [errorMessage])
     return (
         <div className="datatable">
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+            {/* if no acces token. show password input box */}
+            {showLogin && (
+                <div className="login-panel">
+                    <div className="login-container">
+                        <TextField
+                            type="password"
+                            label="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <button variant="contained" onClick={handleLogin}>
+                            Login
+                        </button>
+                    </div>
+                </div>
+            )}
             <div className="datatableTitle">
                 User
                 <Link to="/users/new" className="link">

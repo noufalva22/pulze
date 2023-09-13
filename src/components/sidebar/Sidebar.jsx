@@ -15,9 +15,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { logout } from '../../redux/userRedux';
 import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 const Sidebar = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate("")
+    
+
+    useEffect(() => {
+        // Function to get the value of a specific cookie by name
+        let x = decodeURIComponent(document.cookie.access_token);
+        console.log("cookie is ", x);
+        const getCookieValue = (name) => {
+          const cookies = document.cookie.split(';');
+          console.log(document.cookie);
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+              return cookie.substring(name.length + 1);
+            }
+          }
+          return null;
+        };
+    
+        // Access the "access_token" cookie
+        const accessToken = getCookieValue('access_token');
+        console.log('Access Token:', accessToken);
+      }, []);
     return (
         <div className='sidebar'>
             <div className="top">
@@ -82,7 +105,7 @@ const Sidebar = () => {
                         <SettingsSystemDaydreamOutlinedIcon className="icon" />
                         <span> Log</span>
                     </li>
-                    <p className='title'>SERVICE</p>
+                    {/* <p className='title'>SERVICE</p>
                     <li>
                         <SettingsSystemDaydreamOutlinedIcon className="icon" />
                         <span> System Health</span>
@@ -99,7 +122,7 @@ const Sidebar = () => {
                     <li>
                         <AccountCircleOutlinedIcon className="icon" />
                         <span>Profile</span>
-                    </li>
+                    </li> */}
                     <li>
                         <ExitToAppIcon className="icon" />
                         <span onClick={() => {
