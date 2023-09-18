@@ -9,7 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { adminRequest } from '../../requestMethods';
+import { adminRequest, publicRequest } from '../../requestMethods';
 import { Bars } from 'react-loader-spinner'
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -40,6 +40,8 @@ const Products = () => {
     const [category, setCategory] = useState()
     const [MRP, setMRP] = useState()
     const [price, setPrice] = useState()
+    const [isActive, setIsActive] = useState("No")
+    const [priority, setPriority] = useState(10)
     const [errorMessage, setErrorMessage] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
     const [password, setPassword] = useState("");
@@ -57,7 +59,7 @@ const Products = () => {
     const getProducts = async () => {
 
         try {
-            const res = await adminRequest.get(`/products`, {
+            const res = await adminRequest.get(`/products/all`, {
                 withCredentials: true
             })
             setProducts(res.data)
@@ -88,6 +90,8 @@ const Products = () => {
             category: category,
             MRP: MRP,
             price: price,
+            priority,
+            isActive,
 
 
         }
@@ -158,6 +162,8 @@ const Products = () => {
             category,
             MRP,
             price,
+            priority,
+            isActive
         }
         console.log("pro data", productData);
         try {
@@ -251,14 +257,13 @@ const Products = () => {
     }, [newImagesNormal])
 
     const handleDeleteImage = async () => {
-
         if (products && products[selectedIndex] && products[selectedIndex].image) {
-
-
             try {
-                const res = await adminRequest.put(`/products/${products[selectedIndex]._id}/delete-image`, {
+                const res = await publicRequest.put(`/products/${products[selectedIndex]._id}/delete-image`, {
                     //this index is image index
                     selectedIndex: selectedImg,
+                }, {
+                    withCredentials: true
                 });
 
                 console.log(res.data)
@@ -281,7 +286,7 @@ const Products = () => {
                 setSuccessMessage("Deleted")
                 handleNotification("Success", "Deleted")
             } catch (error) {
-                console.error(error);
+                console.log("Error: ", error);
                 setErrorMessage(error.message)
                 handleNotification("Error", error.message)
 
@@ -324,6 +329,8 @@ const Products = () => {
             setCategory(products[selectedIndex].category)
             setMRP(products[selectedIndex].MRP)
             setPrice(products[selectedIndex].price)
+            setPriority(products[selectedIndex].priority? products[selectedIndex].priority : 10)
+            setIsActive(products[selectedIndex].isActive? products[selectedIndex].isActive : "No")
         }
 
     }, [products])
@@ -336,6 +343,8 @@ const Products = () => {
             setCategory(products[selectedIndex].category)
             setMRP(products[selectedIndex].MRP)
             setPrice(products[selectedIndex].price)
+            setPriority(products[selectedIndex].priority? products[selectedIndex].priority : 10)
+            setIsActive(products[selectedIndex].isActive? products[selectedIndex].isActive : "No")
         }
 
     }, [selectedIndex])
@@ -631,6 +640,8 @@ const Products = () => {
                                 setPrice(0)
                                 setProductID('')
                                 setNewImages([]);
+                                setPriority(10)
+                                setIsActive(false)
 
                             }}>Add New</button>
                         </div>
@@ -643,6 +654,8 @@ const Products = () => {
                                             <TableCell className="tableCell">Product ID</TableCell>
                                             <TableCell className="tableCell">Price</TableCell>
                                             <TableCell className="tableCell">MRP</TableCell>
+                                            <TableCell className="tableCell">Priority</TableCell>
+                                            <TableCell className="tableCell">Active</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -668,6 +681,8 @@ const Products = () => {
                                                 </TableCell>
                                                 <TableCell className="tableCell">{product.MRP}</TableCell>
                                                 <TableCell className="tableCell">{product.price}</TableCell>
+                                                <TableCell className="tableCell">{product.priority}</TableCell>
+                                                <TableCell className="tableCell">{product.isActive}</TableCell>
                                             </TableRow>
                                         )) : ''}
                                     </TableBody>
@@ -782,6 +797,19 @@ const Products = () => {
                                     <label>Price</label>
                                     <input type="text" value={price}
                                         onChange={(e) => setPrice(e.target.value)} />
+                                </div>
+                                <div className="formInput">
+
+                                    <label>Priority</label>
+                                    <input type="text" value={priority}
+                                        onChange={(e) => setPriority(e.target.value)} />
+                                </div>
+                                <div className="formInput">
+                                    <label>Is Active</label>
+                                    <select value={isActive} onChange={(e) => setIsActive(e.target.value)}>
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                    </select>
                                 </div>
                                 {addNewProduct ? <button
                                     onClick={() =>
