@@ -6,6 +6,7 @@ import UserDatatable from '../../components/datatable/UserDatatable'
 import TapDatatable from '../../components/datatable/TapDatatable'
 import WebsiteTrafficDatatable from '../../components/datatable/WebsiteTrafficDatatable'
 
+
 const List = (page) => {
 
   console.log(page);
