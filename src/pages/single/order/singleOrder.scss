@@ -126,23 +126,26 @@
 
                 .details {
                     flex: 1;
-
+                    margin-top: 12px;
                     // height: 50%;
                     display: flex;
+
                     // align-items: end;
                     .itemValue {
                         font-weight: 700;
                         color: darkcyan;
                         font-size: 15px;
                     }
-                    .section-1{
+
+                    .section-1 {
                         flex: 1;
                     }
-                    .section-2{
+
+                    .section-2 {
                         flex: 1;
                         text-align: end;
                         margin-right: 20px;
-                       
+
 
                     }
                 }
@@ -152,9 +155,14 @@
                     // height: 50%;
 
                 }
-                .actions{
+
+                .actions {
                     margin: 20px 0px;
-                    .link{
+                    display: flex;
+
+                    justify-content: space-evenly;
+
+                    .link {
                         text-decoration: none;
                         color: green;
                         font-size: 16px;
@@ -163,24 +171,26 @@
                         padding: 5px;
                         border-radius: 5px;
                         cursor: pointer;
-                        svg{
+
+                        svg {
                             color: red;
-                            
+
                         }
                     }
-                    button{
-                          border: 1px solid green;
-                          border-radius: 5px;
-                          height: 30px;
-                          width: 100px;
-                          background-color: transparent;
-                          cursor: pointer;
 
-                          &:hover{
+                    button {
+                        border: 1px solid green;
+                        border-radius: 5px;
+                        height: 50px;
+                        width: 150px;
+                        background-color: transparent;
+                        cursor: pointer;
+
+                        &:hover {
                             color: white;
                             background-color: rgba(0, 128, 0, 0.571);
-                          }
-                      }
+                        }
+                    }
                 }
 
                 h1 {
@@ -191,7 +201,7 @@
                     -webkit-box-shadow: 0px 0px 22px 2px rgba(222, 222, 222, 1);
                     -moz-box-shadow: 0px 0px 22px 2px rgba(222, 222, 222, 1);
                     box-shadow: 0px 0px 22px 2px rgba(222, 222, 222, 1);
-                    
+
                     margin-top: 10px;
                 }
             }
@@ -219,3 +229,15 @@
     align-items: center;
     justify-content: center;
 }
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.093); /* Semi-transparent white overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }

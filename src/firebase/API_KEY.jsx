@@ -1,5 +1,5 @@
-export const API_KEY="rzp_live_hawWUABNDU06Zl";
-export const API_KEY_SECRET="8GhyHy9poxaCGD797K7LHaCy";
+// export const API_KEY="rzp_live_hawWUABNDU06Zl";
+// export const API_KEY_SECRET="8GhyHy9poxaCGD797K7LHaCy";
 
 
 // demo

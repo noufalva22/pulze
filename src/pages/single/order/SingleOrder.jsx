@@ -6,7 +6,7 @@ import Navbar from "../../../components/navbar/Navbar";
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { adminRequest } from '../../../requestMethods';
-import { Bars } from 'react-loader-spinner'
+import { Bars, ColorRing } from 'react-loader-spinner'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 // import '../../../../public/Theme/Theme-1/'
 import VerifiedIcon from '@mui/icons-material/Verified';
@@ -19,10 +19,18 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+
+import Box from '@mui/material/Box';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import { handleNotification } from '../../../utils/NotificationsUtils';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
 const SingleOrder = () => {
     const location = useLocation()
     const orderID = location.pathname.split("/")[2]
-
+    const [loading, setLoading] = useState(false);
     // console.log(orderID);
 
     const [userData, setUserData] = useState()
@@ -94,7 +102,7 @@ const SingleOrder = () => {
     }, [username])
     useEffect(() => {
         let sum = 0;
-        if (orderData !== undefined && orderData !=null) {
+        if (orderData !== undefined && orderData != null) {
 
             orderData.products.forEach((row) => {
                 sum += row.unitPrice;
@@ -103,8 +111,126 @@ const SingleOrder = () => {
         }
     }, [orderData]);
 
+
+
     const shipNow = async () => {
         console.log("Ship now");
+        try {
+            setLoading(true)
+
+
+            const shipmentPayload = {
+                shipments: [
+                    {
+                        name: userData.name,
+                        add: userData.fullAddress,
+                        pin: userData.pinCode,
+                        city: userData.city,
+                        state: userData.state,
+                        country: userData.country,
+                        phone: userData.mobile,
+                        // order: orderData.orderID,
+                        order: "NAK-20",
+                        payment_mode: orderData.payment.method === 'COD' ? 'COD' : 'Pre-paid',
+
+
+                        return_pin: "",
+                        return_city: "",
+                        return_phone: "",
+                        return_add: "",
+                        return_state: "",
+                        return_country: "",
+                        products_desc: "",
+                        hsn_code: "",
+                        cod_amount: orderData.totalOrderValue,
+                        order_date: orderData.createdAt,
+                        total_amount: orderData.totalOrderValue,
+                        seller_add: "cdcdcdsc",
+                        seller_name: "dcsdcdc",
+                        seller_inv: "cdc",
+                        quantity: orderData.products.length,
+                        waybill: "",
+                        shipment_width: "100",
+                        shipment_height: "100",
+                        weight: orderData.products.length*100,
+                        seller_gst_tin: "",
+                        shipping_mode: "Surface",
+                        address_type: ""
+                    }
+                ],
+                pickup_location: {
+                    name: "Two",
+                    add: "Room No 1",
+                    city: "Delhi",
+                    pin_code: 680303,
+                    country: "India",
+                    phone: "9947672066"
+                },
+            };
+
+
+           
+            const response = await adminRequest.post('/shipment/create', shipmentPayload);
+            // console.log(response.data.RES.success);
+            console.log(response.data);
+           if(response.data.RES.success ==true){
+          
+            //update order status to manifest and waybill no
+            setOrderData(prevOrderData => ({
+                ...prevOrderData,
+                status: 'manifested',
+                waybill: response.data.RES.packages[0].waybill,
+            }));
+            try {
+                console.log("1");
+                console.log(response.data.RES.packages[0].waybill);
+                const updatedOrderData = { ...orderData, status: "manifested",  waybill: response.data.RES.packages[0].waybill};
+                const orderUpdateResponse = await adminRequest.put(`/order/${orderData._id}`, updatedOrderData);
+                console.log("2",orderUpdateResponse.data);
+                handleNotification('Success', 'Order status updated successfully.');
+                setLoading(false)
+            } catch (err) {
+                console.log(err);
+                alert('Error in updating the order status.');
+                setLoading(false)
+            }
+        
+            
+        }else{
+            handleNotification('Error', response.data.RES.packages[0].remarks[0]);
+            setLoading(false)
+           }
+           
+
+        } catch (error) {
+            console.error('Request error:', error);
+            alert('Error creating order. Please try again.');
+            setLoading(false)
+        }
+
+
+
+
+    }
+    const confirmOrder = async () => {
+        console.log("confirm order");
+        setLoading(true)
+        try {
+            setOrderData(prevOrderData => ({
+                ...prevOrderData,
+                status: 'confirmed',
+            }));
+            const updatedOrderData = { ...orderData, status: "confirmed" };
+            const response = await adminRequest.put(`/order/${orderData._id}`, updatedOrderData);
+            console.log(response);
+            handleNotification('Success', 'Order status updated successfully.');
+            setLoading(false)
+        } catch (error) {
+            console.error('Request error:', error);
+            handleNotification('Error', 'Failed to update order status.');
+            // alert('Error creating order. Please try again.');
+            setLoading(false)
+        }
     }
     const [isCopied, setIsCopied] = useState(false);
     function copyToClipboard(text) {
@@ -124,15 +250,67 @@ const SingleOrder = () => {
         }, 10000); // Reset the copied state after 10 seconds
     };
 
+    //Material UI Order Steps
+
+    const steps = [
+        'Ordered',
+        'Confirmed',
+        'Manifested',
+        'In Transist',
+        'Delivered'
+    ];
+
+    const getOrderStatusStep = (status) => {
+        switch (status) {
+            case 'pending':
+                return 1;
+            case 'confirmed':
+                return 2;
+            case 'manifested':
+                return 3;
+            case 'in-transit':
+                return 4;
+            case 'delivered':
+                return 5;
+            default:
+                return 0;
+        }
+    };
+
     return (
         <div className="singleOrder">
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+            {loading && (
+                <div className="loader-container">
+
+                    <ColorRing
+
+                        visible={true}
+                        height="80"
+                        width="80"
+                        ariaLabel="color-ring-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="color-ring-wrapper"
+                        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']} />
+                </div>
+            )}
             <Sidebar />
             <div className="singleOrderContainer">
                 <Navbar />
                 {userData ?
                     <>
                         <div className="top">
-                            <div className="left">
+                            <div className="left" >
                                 <Link to={`/users/${email}`}>
                                     <div className="editButton"><DoubleArrowIcon /></div>
                                 </Link>
@@ -224,7 +402,21 @@ const SingleOrder = () => {
 
 
                             </div>
+
+
                             <div className="right">
+                                <div>
+
+                                    <Box sx={{ width: '100%' }}>
+                                        <Stepper activeStep={getOrderStatusStep(orderData.status)} alternativeLabel>
+                                            {steps.map((label) => (
+                                                <Step key={label}>
+                                                    <StepLabel>{label}</StepLabel>
+                                                </Step>
+                                            ))}
+                                        </Stepper>
+                                    </Box>
+                                </div>
                                 <div className="details">
                                     <div className="section-1">
 
@@ -319,9 +511,16 @@ const SingleOrder = () => {
                                     </TableContainer>
                                 </div>
                                 <div className="actions">
-                                    <button onClick={() => {
-                                        shipNow()
-                                    }}><LocalShippingIcon /></button>
+                                    {orderData.status === 'pending' && (
+                                        <button onClick={() => confirmOrder()}>Confirm Order</button>
+                                    )}
+                                    {orderData.status === 'confirmed' && (
+                                        <button onClick={() => shipNow()}>Ship Now</button>
+                                    )}
+                                    {orderData.status === 'manifested' && (
+                                        <button onClick={() => shipNow()}>Check Status</button>
+                                    )}
+
 
                                 </div>
 
