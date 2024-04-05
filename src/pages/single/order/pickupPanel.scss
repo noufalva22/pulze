@@ -1,0 +1,43 @@
+.pickupPanel {
+    &__overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+      z-index: 9998; /* Below the panel */
+    }
+  
+    &__container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+      z-index: 9999; /* On top of the overlay */
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 300px; /* Adjust the width as needed */
+  
+      &__closeButton {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: #333;
+      }
+  
+      &__content {
+        /* Add any specific styling for the content */
+      }
+  
+      &__buttons {
+        /* Add any specific styling for the buttons container */
+      }
+    }
+  }
+  

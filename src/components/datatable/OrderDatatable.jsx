@@ -183,6 +183,7 @@ const OrderDatatable = () => {
                 pauseOnHover
             />
             {/* if no acces token. show password input box */}
+
             {showLogin && (
                 <div className="login-panel">
                     <div className="login-container">
@@ -198,59 +199,67 @@ const OrderDatatable = () => {
                     </div>
                 </div>
             )}
+            <div className="orderNav">
 
-
-            <div className="datatableTitle">
-                Orders
-                <Link to="/users/new" className="link">
-                    Add New
-                </Link>
             </div>
-            <div className="datePickerContainer">
-                <DatePicker
-                    label="Start Date"
-                    value={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    renderInput={(params) => <TextField {...params} />}
-                />
-                <DatePicker
-                    label="End Date"
-                    value={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    renderInput={(params) => <TextField {...params} />}
-                />
+            <div className="orderContent">
 
-                {/* <button onClick={handleUpdateSearch}>update</button> */}
-            </div>
-            {data ?
-                <DataGrid
-                    className="datagrid"
-                    rows={data}
-                    columns={orderColumns.concat(actionColumn)}
-                    pageSize={9}
-                    rowsPerPageOptions={[9]}
-                    checkboxSelection
-                    getRowId={getRowId}
-                // sortModel={sortModel} 
 
-                /> : <div className="loader">
 
-                    <div class="loading">
-                        <svg width="64px" height="48px">
-                            <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
-                            <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
-                        </svg>
-                    </div>
-                </div>}
-            {showConfirmation && (
-                <div className="confirmationPopup">
-                    <div className="confirmationMessage">Are you sure?</div>
-                    <div className="confirmationButtons">
-                        <button onClick={() => { handleDelete(deleteItemId) }}>Yes</button>
-                        <button onClick={cancelDelete}>No</button>
-                    </div>
+
+                <div className="datatableTitle">
+                    Orders
+                    <Link to="/users/new" className="link">
+                        Add New
+                    </Link>
                 </div>
-            )}
+                <div className="datePickerContainer">
+                    <DatePicker
+                        label="Start Date"
+                        value={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                    <DatePicker
+                        label="End Date"
+                        value={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+
+                    {/* <button onClick={handleUpdateSearch}>update</button> */}
+                </div>
+
+                {/* {data ?
+                    <DataGrid
+                        className="datagrid"
+                        rows={data}
+                        columns={orderColumns.concat(actionColumn)}
+                        pageSize={9}
+                        rowsPerPageOptions={[9]}
+                        checkboxSelection
+                        getRowId={getRowId}
+                    // sortModel={sortModel} 
+
+                    /> : <div className="loader">
+
+                        <div class="loading">
+                            <svg width="64px" height="48px">
+                                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+                                <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+                            </svg>
+                        </div>
+                    </div>} */}
+                {showConfirmation && (
+                    <div className="confirmationPopup">
+                        <div className="confirmationMessage">Are you sure?</div>
+                        <div className="confirmationButtons">
+                            <button onClick={() => { handleDelete(deleteItemId) }}>Yes</button>
+                            <button onClick={cancelDelete}>No</button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

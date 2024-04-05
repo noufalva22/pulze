@@ -5,7 +5,7 @@ import Navbar from "../../../components/navbar/Navbar";
 // import List from "../../components/table/Table";
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { adminRequest } from '../../../requestMethods';
+import { adminRequest, publicRequest } from '../../../requestMethods';
 import { Bars, ColorRing } from 'react-loader-spinner'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 // import '../../../../public/Theme/Theme-1/'
@@ -19,7 +19,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
-
+import SyncIcon from '@mui/icons-material/Sync';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -27,6 +27,9 @@ import StepLabel from '@mui/material/StepLabel';
 import { handleNotification } from '../../../utils/NotificationsUtils';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import PickupPanel from './PickupPanel';
+import { saveAs } from 'file-saver';
+
 const SingleOrder = () => {
     const location = useLocation()
     const orderID = location.pathname.split("/")[2]
@@ -39,6 +42,8 @@ const SingleOrder = () => {
     const [email, setEmail] = useState()
     const [username, setUsername] = useState()
     const [total, setTotal] = useState(0);
+
+    const [showPanel, setShowPanel] = useState(false);
     let loadFlag = 0
     useEffect(() => {
         if (loadFlag === 0) {
@@ -115,10 +120,12 @@ const SingleOrder = () => {
 
     const shipNow = async () => {
         console.log("Ship now");
+        const productsDescription = orderData.products.map(product => `${product.productName} : ${product.qty}`).join('\n');
+        const productsPrice = orderData.products.map(product => `${product.unitPrice} /-`);
         try {
             setLoading(true)
 
-
+            console.log(productsPrice);
             const shipmentPayload = {
                 shipments: [
                     {
@@ -129,30 +136,33 @@ const SingleOrder = () => {
                         state: userData.state,
                         country: userData.country,
                         phone: userData.mobile,
-                        // order: orderData.orderID,
-                        order: "NAK-20",
+                        order: orderData.orderID,
+                        // order: "NAK-21",
                         payment_mode: orderData.payment.method === 'COD' ? 'COD' : 'Pre-paid',
 
 
-                        return_pin: "",
-                        return_city: "",
-                        return_phone: "",
-                        return_add: "",
-                        return_state: "",
-                        return_country: "",
-                        products_desc: "",
+                        return_pin: "680303",
+                        return_city: "Thrissur",
+                        return_phone: "8943697432",
+                        return_add: "Room No-1",
+                        return_state: "Kerala",
+                        return_country: "India",
+
+                        product_details: productsDescription,
+                        products_desc: productsDescription,
                         hsn_code: "",
                         cod_amount: orderData.totalOrderValue,
                         order_date: orderData.createdAt,
                         total_amount: orderData.totalOrderValue,
-                        seller_add: "cdcdcdsc",
-                        seller_name: "dcsdcdc",
-                        seller_inv: "cdc",
+                        seller_add: "ROOM NO 1",
+                        seller_name: "TIKK TAP COMMUNICATIONS",
+                        seller_inv: "",
                         quantity: orderData.products.length,
                         waybill: "",
-                        shipment_width: "100",
-                        shipment_height: "100",
-                        weight: orderData.products.length*100,
+                        shipment_width: "150",
+                        shipment_length: "100",
+                        shipment_height: "5",
+                        weight: orderData.products.length * 100,
                         seller_gst_tin: "",
                         shipping_mode: "Surface",
                         address_type: ""
@@ -169,38 +179,38 @@ const SingleOrder = () => {
             };
 
 
-           
+
             const response = await adminRequest.post('/shipment/create', shipmentPayload);
             // console.log(response.data.RES.success);
             console.log(response.data);
-           if(response.data.RES.success ==true){
-          
-            //update order status to manifest and waybill no
-            setOrderData(prevOrderData => ({
-                ...prevOrderData,
-                status: 'manifested',
-                waybill: response.data.RES.packages[0].waybill,
-            }));
-            try {
-                console.log("1");
-                console.log(response.data.RES.packages[0].waybill);
-                const updatedOrderData = { ...orderData, status: "manifested",  waybill: response.data.RES.packages[0].waybill};
-                const orderUpdateResponse = await adminRequest.put(`/order/${orderData._id}`, updatedOrderData);
-                console.log("2",orderUpdateResponse.data);
-                handleNotification('Success', 'Order status updated successfully.');
-                setLoading(false)
-            } catch (err) {
-                console.log(err);
-                alert('Error in updating the order status.');
+            if (response.data.RES.success == true) {
+
+                //update order status to manifest and waybill no
+                setOrderData(prevOrderData => ({
+                    ...prevOrderData,
+                    status: 'manifested',
+                    waybill: response.data.RES.packages[0].waybill,
+                }));
+                try {
+                    console.log("1");
+                    console.log(response.data.RES.packages[0].waybill);
+                    const updatedOrderData = { ...orderData, status: "manifested", waybill: response.data.RES.packages[0].waybill };
+                    const orderUpdateResponse = await adminRequest.put(`/order/${orderData._id}`, updatedOrderData);
+                    console.log("2", orderUpdateResponse.data);
+                    handleNotification('Success', 'Order status updated successfully.');
+                    setLoading(false)
+                } catch (err) {
+                    console.log(err);
+                    alert('Error in updating the order status.');
+                    setLoading(false)
+                }
+
+
+            } else {
+                handleNotification('Error', response.data.RES.packages[0].remarks[0]);
                 setLoading(false)
             }
-        
-            
-        }else{
-            handleNotification('Error', response.data.RES.packages[0].remarks[0]);
-            setLoading(false)
-           }
-           
+
 
         } catch (error) {
             console.error('Request error:', error);
@@ -232,6 +242,167 @@ const SingleOrder = () => {
             setLoading(false)
         }
     }
+    const checkStatus = async () => {
+
+        setLoading(true)
+        try {
+            const response = await adminRequest.get(`/shipment/track/${orderData.waybill}`)
+            console.log(response.data);
+            console.log(response.data.ShipmentData[0].Shipment.Status.Status);
+            let STATUS = response.data.ShipmentData[0].Shipment.Status.Status;
+            handleNotification('Success', `Status: ${STATUS} `);
+
+            if (STATUS === 'Delivered' || STATUS === 'LOST' || STATUS === 'RTO') {
+                setOrderData(prevOrderData => ({
+                    ...prevOrderData,
+                    status: STATUS,
+
+                }));
+                const updatedOrderData = { ...orderData, status: STATUS };
+                try {
+                    const response = await adminRequest.put(`/order/${orderData._id}`, updatedOrderData);
+
+                } catch (error) {
+                    handleNotification('Error', 'Failed to update order status.');
+                }
+
+            }
+            setLoading(false)
+        } catch (error) {
+            console.log(error);
+            setLoading(false)
+        }
+    }
+    const printLabel = async () => {
+        setLoading(true);
+        console.log('Print Label');
+        // const trackingNumbers = ['21917410000965', '21917410000976'];
+        const trackingNumbers = orderData.waybill;
+        console.log(trackingNumbers);
+        const pdf = true;
+
+        try {
+            const response = await adminRequest.get('/shipment/printLabel', {
+                params: {
+                    //   wbns: trackingNumbers.join(','),
+                    wbns: trackingNumbers,
+                    pdf: pdf,
+                },
+
+            });
+            if (!response.data || response.data.length === 0) {
+                console.error('Invalid link received:', response.data);
+                setLoading(false);
+                return;
+            }
+
+            // Assuming response.data contains the S3 link
+            const s3Link = response.data.pdfUrl;
+            console.log(response.data);
+            // Open the S3 link in a new window
+            window.open(s3Link, '_blank');
+
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
+    };
+
+    const calculateShippingCost = async () => {
+        setLoading(true);
+        console.log("shipping cost");
+
+        const { emailId, username, products, totalOrderValue } = orderData;
+        const cgm = orderData.products.length * 100; // Replace with the appropriate chargeable weight calculation based on your data
+        const o_pin = 680303; // WH Replace with the origin pin code
+        const d_pin = userData.pinCode; // Replace with the destination pin code
+        const ss = "Delivered";
+        // const pt ="Pre-paid";
+        const pt = orderData.payment.method === 'COD' ? 'COD' : 'Pre-paid';
+        // const cod = 456;
+        const cod = orderData.payment.method === 'COD' ? orderData.totalOrderValue : 0;
+        try {
+
+            const res = await publicRequest.get(`/shipment/check-charge`, {
+
+                params: {
+
+                    md: "S",
+                    cgm,
+                    o_pin,
+                    d_pin,
+                    ss,
+                    pt,
+                    cod,
+                },
+            });
+
+            const shippingCost = res.data[0].total_amount;
+            console.log(res.data);
+            console.log('Res', res.data);
+            console.log('Shipping cost:', shippingCost);
+
+            //Update shipping cost in order: in DB
+            try {
+                setOrderData(prevOrderData => ({
+                    ...prevOrderData,
+                    shippingCost: shippingCost,
+                }));
+                const updatedOrderData = { ...orderData, shippingCost: shippingCost };
+                const response = await adminRequest.put(`/order/${orderData._id}`, updatedOrderData);
+               console.log("Done");
+             
+                setLoading(false)
+            } catch (error) {
+                console.error('Request error:', error);
+                handleNotification('Error', 'Failed to update shipping Charge.');
+                // alert('Error creating order. Please try again.');
+                setLoading(false)
+            }
+        } catch (error) {
+
+            console.error('Error calculating shipping cost:', error.message);
+            setLoading(false);
+        }
+    }
+
+    const schedulePickup = async () => {
+        setShowPanel(true);
+        const pickupDetails = {
+            pickup_time: "14:30:00",
+            pickup_date: "2024-01-22",
+            pickup_location: "Two",
+            expected_package_count: 1
+        };
+
+
+        try {
+            // Make an HTTP POST request to the Delhivery pickup request creation API
+            const response = await axios.post('https://track.delhivery.com/fm/request/new/', pickupDetails, {
+                headers: {
+                    'Authorization': 'Token 206a3d4b79204b8a83c94be5972dbc16fc2f41a0',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // You may need to include additional headers like authorization if required
+                }
+            });
+
+            // Assuming the response includes the pickup_id
+            const pickupId = response.data.pickup_id;
+
+            // Do something with the pickupId, like updating state or displaying a message
+            console.log('Pickup scheduled successfully. Pickup ID:', pickupId);
+
+            // Optionally, you can update state to show a panel or display a success message
+            setShowPanel(true);
+        } catch (error) {
+            // Handle any errors that occur during the API request
+            console.error('Error scheduling pickup:', error);
+            // Optionally, you can update state to show an error message
+        }
+
+    }
     const [isCopied, setIsCopied] = useState(false);
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text)
@@ -260,6 +431,7 @@ const SingleOrder = () => {
         'Delivered'
     ];
 
+
     const getOrderStatusStep = (status) => {
         switch (status) {
             case 'pending':
@@ -270,12 +442,19 @@ const SingleOrder = () => {
                 return 3;
             case 'in-transit':
                 return 4;
-            case 'delivered':
+            case 'RTO':
+                return 4;
+            case 'LOST':
+                return 4;
+            case 'Delivered':
                 return 5;
             default:
                 return 0;
         }
+    }; const handleClose = () => {
+        setShowPanel(false);
     };
+
 
     return (
         <div className="singleOrder">
@@ -290,6 +469,8 @@ const SingleOrder = () => {
                 draggable
                 pauseOnHover
             />
+
+            {showPanel && <PickupPanel onClose={handleClose} onSchedule={schedulePickup} />}
             {loading && (
                 <div className="loader-container">
 
@@ -425,9 +606,18 @@ const SingleOrder = () => {
                                             <span className="itemKey">Order ID:</span>
                                             <span className="itemValue">{orderData.orderID}</span>
                                         </div>
-                                        <div className="detailItem">
+                                        <div className="detailItem status">
                                             <span className="itemKey">Status:</span>
-                                            <span className="itemValue">{orderData.status}</span>
+                                            <span className="itemValue"
+                                                style={{
+                                                    color:
+                                                        orderData.status === 'RTO' || orderData.status === 'LOST' ? 'red' :
+                                                            orderData.status === 'Delivered' ? 'green' :
+                                                                'darkcyan'
+                                                }}
+                                            >
+                                                {orderData.status}</span>
+                                            <span onClick={() => checkStatus()}> <SyncIcon /></span>
                                         </div>
                                         <div className="detailItem">
                                             <span className="itemKey">Payment:</span>
@@ -458,6 +648,16 @@ const SingleOrder = () => {
                                         <div className="detailItem">
                                             <span className="itemKey">Total:</span>
                                             <span className="itemValue">{orderData.totalOrderValue}</span>
+
+                                        </div>
+                                        <div className="detailItem">
+                                            <span className="itemKey">Way Bill No :</span>
+                                            <span className="itemValue">{orderData.waybill? orderData.waybill : '-'}</span>
+
+                                        </div>
+                                        <div className="detailItem">
+                                            <span className="itemKey">Shipping Cost:</span>
+                                            <span className="itemValue"> {orderData.shippingCost ? `₹ ${orderData.shippingCost} /-` : '-'}</span>
 
                                         </div>
 
@@ -515,10 +715,17 @@ const SingleOrder = () => {
                                         <button onClick={() => confirmOrder()}>Confirm Order</button>
                                     )}
                                     {orderData.status === 'confirmed' && (
-                                        <button onClick={() => shipNow()}>Ship Now</button>
+                                        <>
+                                            <button onClick={() => shipNow()}>Ship Now</button>
+                                            <button onClick={() => calculateShippingCost()}>Calculate Shipping Cost</button>
+                                        </>
                                     )}
                                     {orderData.status === 'manifested' && (
-                                        <button onClick={() => shipNow()}>Check Status</button>
+                                        <>
+                                            <button onClick={() => printLabel()}>Print Label</button>
+                                            {/* <button onClick={() => schedulePickup()}>Schedule Pickup</button> */}
+                                            <button onClick={() => schedulePickup()}>Schedule Pickup</button>
+                                        </>
                                     )}
 
 

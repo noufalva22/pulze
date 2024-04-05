@@ -104,6 +104,14 @@
                     margin-bottom: 10px;
                     font-size: 14px;
 
+                    &.status{
+                        display: flex;
+                        svg{
+                            color: green;
+                            cursor: pointer;
+                        }
+                    }
+
                     .itemKey {
                         font-weight: bold;
                         color: gray;
@@ -217,6 +225,37 @@
                 font-size: 16px;
                 color: lightgray;
                 margin-bottom: 20px;
+            }
+        }
+        .pickupPanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000; // Make sure it's above other elements
+            width: 300px; // Adjust the width as needed
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            // Customize the styles as needed
+            &__closeButton {
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+                color: #333;
+            }
+
+            &__content {
+                // Add any specific styling for the content
+            }
+
+            &__buttons {
+                // Add any specific styling for the buttons container
             }
         }
     }

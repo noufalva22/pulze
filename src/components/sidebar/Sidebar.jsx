@@ -4,6 +4,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import StoreIcon from "@mui/icons-material/Store";
+import CampaignIcon from '@mui/icons-material/Campaign';
 import ContactlessOutlinedIcon from '@mui/icons-material/ContactlessOutlined';
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -88,6 +89,16 @@ const Sidebar = () => {
                             <span>Products</span>
                         </li>
                     </Link>
+
+                    <Link to="/campaign" style={{ textDecoration: "none" }}>
+                        <li>
+                            <CampaignIcon className="icon" />
+
+                            <span>Campaign</span>
+                        </li>
+                    </Link>
+
+
                     <p className='title'>USEFUL</p>
                     <Link to="/taps" style={{ textDecoration: "none" }}>
                         <li>

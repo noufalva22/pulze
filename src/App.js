@@ -1,6 +1,7 @@
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import List from "./pages/list/List";
+import Campaign from "./pages/campaign/Campaign";
 import New from "./pages/new/New";
 import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
@@ -59,6 +60,10 @@ function App() {
                 path="new"
                 element={<New inputs={productInputs} title="Add New Products" />}
               />
+            </Route>
+            <Route path="campaign">
+              <Route index element={<Campaign/>} />
+
             </Route>
 
 
