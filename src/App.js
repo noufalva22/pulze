@@ -1,7 +1,7 @@
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import List from "./pages/list/List";
-import Campaign from "./pages/campaign/Campaign";
+import Template from "./pages/template/Template";
 import New from "./pages/new/New";
 import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
@@ -62,7 +62,7 @@ function App() {
               />
             </Route>
             <Route path="campaign">
-              <Route index element={<Campaign/>} />
+              <Route index element={<Template/>} />
 
             </Route>
 
